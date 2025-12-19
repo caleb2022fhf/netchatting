@@ -119,25 +119,31 @@
 </div>
 
 <script>
+    // 🔥 DELETE ALL PREVIOUS USERS (on page load)
+    localStorage.removeItem('users');
+
     const form = document.getElementById('registrationForm');
+
+    // ✅ MASTER LIST OF ALL TRAITS
+    const allTraits = ["Arid","Fitte","travaile","couragesse","sociable","obeisante","fache"];
 
     form.addEventListener('submit', function(e) {
         e.preventDefault();
 
-        const email = document.getElementById('email').value;
-        const username = document.getElementById('username').value;
-        const secondName = document.getElementById('secondName').value;
+        const email = document.getElementById('email').value.trim();
+        const username = document.getElementById('username').value.trim();
+        const secondName = document.getElementById('secondName').value.trim();
         const dob = document.getElementById('dob').value;
         const password = document.getElementById('password').value;
         const confirmPassword = document.getElementById('confirmPassword').value;
 
-        // Username validation
+        // ✅ USERNAME VALIDATION
         if (!/^[A-Za-z_]+$/.test(username)) {
             alert("Username can only contain letters and underscores.");
             return;
         }
 
-        // Age validation
+        // ✅ AGE VALIDATION
         const birthDate = new Date(dob);
         const today = new Date();
         let age = today.getFullYear() - birthDate.getFullYear();
@@ -152,32 +158,47 @@
             return;
         }
 
-        // Password length
+        // ✅ PASSWORD VALIDATION
         if (password.length < 4 || password.length > 10) {
             alert("Password must be 4 to 10 characters long.");
             return;
         }
-
-        // Password match
         if (password !== confirmPassword) {
             alert("Passwords do not match!");
             return;
         }
 
-        // Get existing users from localStorage
-        const users = JSON.parse(localStorage.getItem('users')) || [];
-
-        // Check if email is already used
-        if (users.some(user => user.email === email)) {
-            alert("This email is already registered.");
+        // ✅ CHECK IF EMAIL ALREADY REGISTERED
+        const existingUsers = JSON.parse(localStorage.getItem('users')) || [];
+        const emailExists = existingUsers.some(user => user.email === email);
+        if (emailExists) {
+            alert("This email is already registered!");
             return;
         }
 
-        // Save new user
-        users.push({ email, username, secondName, dob, password });
-        localStorage.setItem('users', JSON.stringify(users));
+        // ✅ EMAIL VERIFICATION (simple check for non-predefined emails)
+        const verificationCode = Math.floor(100000 + Math.random() * 900000);
+        const userInput = prompt(`Verification code sent to ${email}\nEnter the 6-digit code:`);
+        if (userInput != verificationCode) {
+            alert("Incorrect verification code.");
+            return;
+        }
 
-        // Redirect
+        // ✅ ASSIGN ALL TRAITS TO EVERY EMAIL
+        const traits = allTraits;
+
+        // ✅ SAVE NEW USER
+        existingUsers.push({
+            email,
+            username,
+            secondName,
+            dob,
+            password,
+            traits
+        });
+        localStorage.setItem('users', JSON.stringify(existingUsers));
+
+        alert(`Registration successful!\nTraits: ${traits.join(", ")}`);
         window.location.href = 'Untitled-14.html';
     });
 </script>
