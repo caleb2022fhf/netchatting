@@ -325,9 +325,9 @@ footer {
       <div id="userName"></div>
     </div>
 
-    <!-- FRIENDS SECTION WITH USER PHOTO -->
+    <!-- FRIENDS SECTION WITH USER PHOTO FROM Untitled-4 -->
     <div id="friendsSection" style="display:flex; align-items:center; gap:10px;">
-      <img id="friendAvatar" src="" alt="Friend Pic" style="width:40px; height:40px; border-radius:50%; object-fit:cover;">
+      <img id="friendAvatar" src="https://via.placeholder.com/40" alt="Friend Pic" style="width:40px; height:40px; border-radius:50%; object-fit:cover;">
       <span>Friends</span>
     </div>
 
@@ -399,13 +399,12 @@ function logOut(){ window.location.href='Untitled-13.html'; }
 // SHOW USER INFO
 window.addEventListener('DOMContentLoaded', function(){
   const username = localStorage.getItem('username') || '';
-  const profilePic = localStorage.getItem('profilePic') || 'https://via.placeholder.com/50';
-  
   document.getElementById('userName').textContent = username;
-  document.getElementById('userAvatar').src = profilePic;
 
-  // Set profile pic for friends section
-  document.getElementById('friendAvatar').src = profilePic;
+  // Get the latest post image from Untitled-4
+  const latestPostImage = localStorage.getItem('latestPostImage') || 'https://via.placeholder.com/50';
+  document.getElementById('userAvatar').src = latestPostImage;
+  document.getElementById('friendAvatar').src = latestPostImage;
 });
 
 // LIVE SEARCH WITH PROFILE PICTURE
