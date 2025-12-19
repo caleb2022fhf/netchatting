@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Change Password</title>
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    background-color: #000;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    color: #fff;
+    flex-direction: column;
+  }
+
+  .back-container {
+    align-self: flex-start;
+    margin-left: 20px;
+    margin-bottom: 20px;
+  }
+
+  .back-icon {
+    width: 50px;
+    height: 50px;
+    background: linear-gradient(135deg, #00ffff, #ff00ff);
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    box-shadow: 0 0 15px #00ffff, 0 0 25px #ff00ff;
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+
+  .back-icon:hover {
+    transform: scale(1.1);
+    box-shadow: 0 0 20px #00ffff, 0 0 35px #ff00ff;
+  }
+
+  .back-icon svg {
+    width: 24px;
+    height: 24px;
+    fill: black;
+  }
+
+  .change-password-container {
+    background: #111;
+    padding: 40px;
+    border-radius: 10px;
+    width: 350px;
+    box-shadow: 0 4px 12px rgba(255,255,255,0.1);
+  }
+
+  h2 {
+    margin-bottom: 20px;
+    color: #00ffff;
+    text-align: center;
+  }
+
+  .input-container {
+    position: relative;
+    margin-bottom: 10px;
+  }
+
+  input[type="password"], input[type="text"] {
+    width: 100%;
+    padding: 12px;
+    padding-right: 40px; /* space for eye icon */
+    border: 1px solid #555;
+    border-radius: 6px;
+    background: #222;
+    color: #fff;
+  }
+
+  input::placeholder {
+    color: #aaa;
+  }
+
+  .password-hint {
+    font-size: 12px;
+    color: #888;
+    margin-bottom: 10px;
+  }
+
+  .toggle-eye {
+    position: absolute;
+    top: 50%;
+    right: 12px;
+    transform: translateY(-50%);
+    cursor: pointer;
+    fill: #aaa;
+    width: 20px;
+    height: 20px;
+  }
+
+  button {
+    width: 100%;
+    padding: 12px;
+    background-color: #00ffff;
+    color: #000;
+    border: none;
+    border-radius: 6px;
+    margin-top: 15px;
+    cursor: pointer;
+    font-weight: bold;
+  }
+
+  button:hover {
+    background-color: #00baba;
+  }
+
+  .success-message {
+    text-align: center;
+    margin-top: 10px;
+    color: #0f0;
+    font-weight: bold;
+  }
+
+  .error-message {
+    text-align: center;
+    margin-top: 10px;
+    color: #f00;
+    font-weight: bold;
+  }
+</style>
+</head>
+<body>
+
+<div class="back-container">
+  <div class="back-icon" onclick="history.back()" title="Go Back">
+    <svg viewBox="0 0 24 24">
+      <path d="M15.41 7.41 14 6l-6 6 6 6 1.41-1.41L10.83 12z"/>
+    </svg>
+  </div>
+</div>
+
+<div class="change-password-container">
+  <h2>Change Password</h2>
+  <form id="passwordForm">
+    <div class="input-container">
+      <input type="password" id="currentPassword" placeholder="Current password" required>
+      <svg class="toggle-eye" onclick="togglePassword('currentPassword', this)" viewBox="0 0 24 24">
+        <path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zm0 12c-2.49 0-4.5-2.01-4.5-4.5S9.51 7.5 12 7.5 16.5 9.51 16.5 12 14.49 16.5 12 16.5zm0-7c-1.38 0-2.5 1.12-2.5 2.5S10.62 14.5 12 14.5 14.5 13.38 14.5 12 13.38 9.5 12 9.5z"/>
+      </svg>
+    </div>
+
+    <div class="input-container">
+      <input type="password" id="newPassword" placeholder="New password" required>
+      <svg class="toggle-eye" onclick="togglePassword('newPassword', this)" viewBox="0 0 24 24">
+        <path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zm0 12c-2.49 0-4.5-2.01-4.5-4.5S9.51 7.5 12 7.5 16.5 9.51 16.5 12 14.49 16.5 12 16.5zm0-7c-1.38 0-2.5 1.12-2.5 2.5S10.62 14.5 12 14.5 14.5 13.38 14.5 12 13.38 9.5 12 9.5z"/>
+      </svg>
+    </div>
+
+    <div class="password-hint">Must be at least 8 characters</div>
+
+    <div class="input-container">
+      <input type="password" id="confirmPassword" placeholder="Confirm new password" required>
+      <svg class="toggle-eye" onclick="togglePassword('confirmPassword', this)" viewBox="0 0 24 24">
+        <path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zm0 12c-2.49 0-4.5-2.01-4.5-4.5S9.51 7.5 12 7.5 16.5 9.51 16.5 12 14.49 16.5 12 16.5zm0-7c-1.38 0-2.5 1.12-2.5 2.5S10.62 14.5 12 14.5 14.5 13.38 14.5 12 13.38 9.5 12 9.5z"/>
+      </svg>
+    </div>
+
+    <button type="submit">Save Changes</button>
+    <div id="message"></div>
+  </form>
+</div>
+
+<script>
+  const form = document.getElementById('passwordForm');
+  const messageDiv = document.getElementById('message');
+
+  // Simulated stored password (normally you'd check this on the server)
+  let storedPassword = localStorage.getItem('password') || '12345678';
+
+  form.addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    const current = document.getElementById('currentPassword').value;
+    const newPass = document.getElementById('newPassword').value;
+    const confirm = document.getElementById('confirmPassword').value;
+
+    if(current !== storedPassword) {
+      messageDiv.textContent = "Current password is incorrect.";
+      messageDiv.className = "error-message";
+      return;
+    }
+
+    if(newPass.length < 8) {
+      messageDiv.textContent = "New password must be at least 8 characters.";
+      messageDiv.className = "error-message";
+      return;
+    }
+
+    if(newPass !== confirm) {
+      messageDiv.textContent = "New passwords do not match.";
+      messageDiv.className = "error-message";
+      return;
+    }
+
+    storedPassword = newPass;
+    localStorage.setItem('password', storedPassword);
+
+    messageDiv.textContent = "Password changed successfully!";
+    messageDiv.className = "success-message";
+    form.reset();
+  });
+
+  // Toggle password visibility
+  function togglePassword(id, icon) {
+    const input = document.getElementById(id);
+    if(input.type === 'password') {
+      input.type = 'text';
+      icon.style.fill = '#00ffff';
+    } else {
+      input.type = 'password';
+      icon.style.fill = '#aaa';
+    }
+  }
+</script>
+
+</body>
+</html>

@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Recent Searches • Netless</title>
+
+<style>
+    body {
+        margin: 0;
+        font-family: Arial, sans-serif;
+        background-color: black;
+        color: #00ffff;
+    }
+
+    /* NEON BACK ICON */
+    .back-container {
+        position: absolute;
+        top: 20px;
+        left: 20px;
+        z-index: 100;
+    }
+
+    .back-icon {
+        width: 50px;
+        height: 50px;
+        background: linear-gradient(135deg, #00ffff, #ff00ff);
+        border-radius: 50%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        cursor: pointer;
+        box-shadow: 0 0 15px #00ffff, 0 0 25px #ff00ff;
+        transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    .back-icon:hover {
+        transform: scale(1.1);
+        box-shadow: 0 0 20px #00ffff, 0 0 35px #ff00ff;
+    }
+
+    .back-icon svg {
+        width: 24px;
+        height: 24px;
+        fill: black;
+    }
+
+    header {
+        position: sticky;
+        top: 0;
+        background-color: #111;
+        padding: 15px;
+        text-align: center;
+        border-bottom: 1px solid #333;
+        z-index: 50;
+    }
+
+    header h1 {
+        margin: 0;
+        font-size: 28px;
+        color: #00ffff;
+        text-shadow: 2px 2px 5px #ff00ff;
+    }
+
+    .search-section {
+        padding: 80px 20px 20px;
+        max-width: 600px;
+        margin: auto;
+    }
+
+    .search-card {
+        background-color: #111;
+        border: 1px solid #333;
+        border-radius: 10px;
+        padding: 12px 15px;
+        margin-bottom: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    .search-card:hover {
+        transform: scale(1.02);
+        box-shadow: 0 0 15px #00ffff, 0 0 25px #ff00ff;
+    }
+
+    .search-left {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .search-icon {
+        width: 34px;
+        height: 34px;
+        border-radius: 50%;
+        background: #222;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-size: 16px;
+        color: #00ffff;
+    }
+
+    .search-text {
+        font-size: 15px;
+        color: #00ffff;
+    }
+
+    .search-time {
+        font-size: 12px;
+        color: #777;
+    }
+
+    .clear-btn {
+        margin-top: 20px;
+        width: 100%;
+        padding: 12px;
+        background: linear-gradient(135deg, #00ffff, #ff00ff);
+        border: none;
+        border-radius: 25px;
+        font-size: 15px;
+        cursor: pointer;
+        color: black;
+        box-shadow: 0 0 15px #00ffff, 0 0 25px #ff00ff;
+    }
+
+    .clear-btn:hover {
+        opacity: 0.9;
+    }
+
+    .empty {
+        text-align: center;
+        color: #555;
+        margin-top: 40px;
+        display: none;
+    }
+</style>
+</head>
+<body>
+
+<!-- Back Icon -->
+<div class="back-container">
+  <div class="back-icon" onclick="window.location.href='Untitled-17.html'" title="Go Back">
+    <svg viewBox="0 0 24 24">
+      <path d="M15.41 7.41 14 6l-6 6 6 6 1.41-1.41L10.83 12z"/>
+    </svg>
+  </div>
+</div>
+
+<header>
+    <h1>Recent Searches</h1>
+</header>
+
+<div class="search-section" id="searchList">
+
+    <div class="search-card">
+        <div class="search-left">
+            <div class="search-icon">@</div>
+            <div>
+                <div class="search-text">@john_doe</div>
+                <div class="search-time">5 minutes ago</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="search-card">
+        <div class="search-left">
+            <div class="search-icon">@</div>
+            <div>
+                <div class="search-text">@nishimwepaulette</div>
+                <div class="search-time">Yesterday</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="search-card">
+        <div class="search-left">
+            <div class="search-icon">#</div>
+            <div>
+                <div class="search-text">#nature_photos</div>
+                <div class="search-time">2 days ago</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="search-card">
+        <div class="search-left">
+            <div class="search-icon">🔍</div>
+            <div>
+                <div class="search-text">Sunset wallpapers</div>
+                <div class="search-time">Last week</div>
+            </div>
+        </div>
+    </div>
+
+    <button class="clear-btn" onclick="clearHistory()">Clear Search History</button>
+    <div class="empty" id="emptyMsg">No recent searches</div>
+
+</div>
+
+<script>
+    const searchList = document.getElementById("searchList");
+    const emptyMsg = document.getElementById("emptyMsg");
+
+    function clearHistory() {
+        document.querySelectorAll(".search-card").forEach(card => card.remove());
+        document.querySelector(".clear-btn").style.display = "none";
+        emptyMsg.style.display = "block";
+    }
+</script>
+
+</body>
+</html>

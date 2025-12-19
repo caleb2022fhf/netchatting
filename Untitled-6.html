@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Messages • Netless</title>
+<style>
+* { box-sizing: border-box; }
+body { margin:0; font-family:Arial, sans-serif; background:black; color:white; display:flex; height:100vh; }
+
+.sidebar { width:300px; background:#111; overflow-y:auto; display:flex; flex-direction:column; }
+.sidebar h2 { margin:10px; font-size:18px; }
+.user-card { display:flex; align-items:center; padding:10px; cursor:pointer; border-bottom:1px solid #222; position:relative; }
+.user-card:hover { background:#222; }
+.avatar { width:40px; height:40px; border-radius:50%; background:#555; margin-right:10px; position:relative; }
+.online-indicator { width:10px; height:10px; border-radius:50%; position:absolute; top:15px; right:10px; border:1px solid white; }
+
+.chat-window { flex:1; display:flex; flex-direction:column; background:#000; }
+.chat-header { padding:10px; background:#111; border-bottom:1px solid #222; font-weight:bold; display:flex; align-items:center; gap:10px; }
+.back-icon { width:40px; height:40px; border-radius:50%; background: linear-gradient(135deg,#00ffff,#ff00ff); display:flex; justify-content:center; align-items:center; cursor:pointer; }
+.back-icon svg { width:20px; height:20px; fill:black; }
+
+.chat-messages { flex:1; padding:10px; overflow-y:auto; display:flex; flex-direction:column; }
+.message { margin-bottom:10px; padding:8px 12px; border-radius:15px; max-width:70%; word-wrap:break-word; position:relative; }
+.message span.time { font-size:10px; color:#aaa; position:absolute; bottom:-14px; right:10px; }
+.sent { background:#1877f2; color:#fff; align-self:flex-end; }
+.received { background:#222; color:#fff; align-self:flex-start; }
+
+.chat-input { display:flex; padding:10px; border-top:1px solid #222; background:#111; }
+.chat-input input { flex:1; padding:10px; border-radius:20px; border:none; margin-right:10px; background:#222; color:white; }
+.chat-input button { padding:10px 20px; border:none; border-radius:20px; background:#1877f2; color:#fff; cursor:pointer; }
+
+.icons { display:flex; align-items:center; gap:10px; margin-left:auto; }
+.icon-btn { width:35px; height:35px; border-radius:50%; background:#222; display:flex; justify-content:center; align-items:center; cursor:pointer; }
+.icon-btn:hover { background:#444; }
+
+#stickerPanel { display:none; position:absolute; bottom:70px; right:20px; background:#222; padding:10px; border-radius:10px; display:flex; gap:10px; flex-wrap:wrap; }
+#stickerPanel img { width:40px; cursor:pointer; }
+
+.bubble img { max-width:100%; border-radius:10px; display:block; }
+
+/* PIN MODAL */
+#pinModal {
+  display:none;
+  position:fixed;
+  top:0; left:0; width:100%; height:100%;
+  background: rgba(0,0,0,0.8);
+  justify-content:center;
+  align-items:center;
+  z-index:1000;
+}
+#pinModal .modal-content {
+  background:#111;
+  padding:20px;
+  border-radius:10px;
+  display:flex; flex-direction:column; gap:10px;
+  width:300px;
+}
+#pinModal input {
+  padding:10px;
+  border-radius:10px;
+  border:none;
+  background:#222;
+  color:white;
+}
+#pinModal button {
+  padding:10px;
+  border-radius:10px;
+  border:none;
+  background:#00ffff;
+  cursor:pointer;
+  color:black;
+}
+</style>
+</head>
+<body>
+
+<div class="sidebar">
+  <h2>Chats</h2>
+  <div id="usersList"></div>
+</div>
+
+<div class="chat-window">
+  <div class="chat-header">
+    <div class="back-icon" onclick="history.back()">
+      <svg viewBox="0 0 24 24"><path d="M15.41 7.41 14 6l-6 6 6 6 1.41-1.41L10.83 12z"/></svg>
+    </div>
+    <div class="avatar"></div>
+    <div id="chatName">Select User</div>
+    <div class="icons">
+      <div class="icon-btn" onclick="startVideoCall()">📹</div>
+      <div class="icon-btn" onclick="openPinModal()">S</div>
+      <div class="icon-btn" onclick="startAudioCall()">🎧</div>
+    </div>
+  </div>
+  <div class="chat-messages" id="chatMessages"></div>
+  <div class="chat-input">
+    <input type="text" id="chatInput" placeholder="Type a message..." disabled>
+    <button id="sendBtn" disabled>Send</button>
+    <label class="icon-btn" for="imageInput">📷</label>
+    <input type="file" id="imageInput" accept="image/*" hidden>
+    <div class="icon-btn" onclick="toggleStickers()">😊</div>
+  </div>
+</div>
+
+<div id="stickerPanel">
+  <img src="https://twemoji.maxcdn.com/v/latest/72x72/1f600.png">
+  <img src="https://twemoji.maxcdn.com/v/latest/72x72/1f602.png">
+  <img src="https://twemoji.maxcdn.com/v/latest/72x72/1f609.png">
+</div>
+
+<!-- PIN MODAL -->
+<div id="pinModal">
+  <div class="modal-content">
+    <label>Enter PIN:</label>
+    <input type="password" id="pinInput">
+    <button onclick="checkPin()">Submit</button>
+    <button onclick="closePinModal()">Cancel</button>
+  </div>
+</div>
+
+<script>
+// USERS DYNAMIC
+let usersFromUntitled8 = JSON.parse(localStorage.getItem('usersFromUntitled8')) || ["User1","User2","User3"];
+const usersList = document.getElementById('usersList');
+let chats=JSON.parse(localStorage.getItem('chatData')) || {};
+let activeUser=null;
+
+function renderUsers(){
+  usersList.innerHTML='';
+  usersFromUntitled8.forEach(name=>{
+    const div = document.createElement('div');
+    div.className='user-card';
+    const online = 'green';
+    div.innerHTML=`<div class="avatar"><div class="online-indicator" style="background:${online}"></div></div>${name}`;
+    div.onclick=()=>openChat(name);
+    usersList.appendChild(div);
+  });
+}
+
+// CHAT LOGIC
+const chatName = document.getElementById('chatName');
+const chatMessages = document.getElementById('chatMessages');
+const chatInput = document.getElementById('chatInput');
+const sendBtn = document.getElementById('sendBtn');
+const stickerPanel = document.getElementById('stickerPanel');
+const stickers = stickerPanel.querySelectorAll('img');
+
+function openChat(user){
+  activeUser=user;
+  chatName.textContent=user;
+  chatInput.disabled=false;
+  sendBtn.disabled=false;
+  renderMessages();
+}
+
+function renderMessages(){
+  if(!activeUser) return;
+  const isAtBottom = chatMessages.scrollHeight - chatMessages.scrollTop <= chatMessages.clientHeight + 50;
+  chatMessages.innerHTML='';
+  const msgs = chats[activeUser]||[];
+  msgs.forEach(msg=>{
+    const div=document.createElement('div');
+    div.className=msg.sent?'message sent':'message received';
+    if(msg.img){ 
+      const img=document.createElement('img'); 
+      img.src=msg.img; 
+      div.appendChild(img); 
+    } else div.textContent=msg.text;
+    const timeSpan=document.createElement('span');
+    timeSpan.className='time';
+    timeSpan.textContent=msg.time || new Date().toLocaleTimeString();
+    div.appendChild(timeSpan);
+    chatMessages.appendChild(div);
+  });
+  if(isAtBottom) chatMessages.scrollTop = chatMessages.scrollHeight;
+}
+
+function addMessage(text, img=false){
+  if(!activeUser) return;
+  const msg={sent:true, text:text||'', img:img||null, time:new Date().toLocaleTimeString()};
+  chats[activeUser]=chats[activeUser]||[];
+  chats[activeUser].push(msg);
+  localStorage.setItem('chatData', JSON.stringify(chats));
+  renderMessages();
+  setTimeout(()=>{simulateReply();},500);
+}
+
+function simulateReply(){
+  if(!activeUser) return;
+  const msg={sent:false, text:'Auto reply', time:new Date().toLocaleTimeString()};
+  chats[activeUser]=chats[activeUser]||[];
+  chats[activeUser].push(msg);
+  localStorage.setItem('chatData', JSON.stringify(chats));
+  renderMessages();
+}
+
+sendBtn.onclick=()=>{ 
+  addMessage(chatInput.value);
+  chatInput.value='';
+}
+
+// IMAGE SEND
+document.getElementById('imageInput').onchange=()=>{
+  const file=document.getElementById('imageInput').files[0];
+  if(!file || !activeUser) return;
+  const reader=new FileReader();
+  reader.onload=()=>{ addMessage(null, reader.result); }
+  reader.readAsDataURL(file);
+}
+
+// STICKERS
+function toggleStickers(){ stickerPanel.style.display=stickerPanel.style.display==='flex'?'none':'flex'; }
+stickers.forEach(s=>{ s.onclick=()=>{ addMessage(null,s.src); stickerPanel.style.display='none'; } });
+
+// VIDEO / AUDIO
+function startVideoCall(){ if(activeUser) alert("Video call with "+activeUser); }
+function startAudioCall(){ if(activeUser) alert("Audio call with "+activeUser); }
+
+// PIN MODAL
+const pinModal = document.getElementById('pinModal');
+const pinInput = document.getElementById('pinInput');
+
+function openPinModal(){ pinModal.style.display='flex'; pinInput.value=''; pinInput.focus(); }
+function closePinModal(){ pinModal.style.display='none'; }
+
+function checkPin(){
+  if(pinInput.value==="C2025"){
+    alert("Correct PIN! Redirecting...");
+    window.location.href="Untitled-24.html";
+  } else {
+    alert("Incorrect PIN. Stay on this page.");
+    closePinModal();
+  }
+}
+
+// INITIAL RENDER
+renderUsers();
+</script>
+</body>
+</html>

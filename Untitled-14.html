@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Human Verification</title>
+    <style>
+        body {
+            background: black;
+            color: #00ffff;
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .box {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            text-align: center;
+            width: 350px;
+            box-shadow: 0 0 10px rgba(255,255,255,0.2);
+        }
+        label {
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+            font-size: 16px;
+            margin-bottom: 20px;
+        }
+        input[type="checkbox"] {
+            margin-right: 10px;
+            width: 20px;
+            height: 20px;
+        }
+        button {
+            padding: 10px 20px;
+            border-radius: 5px;
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+            background: #007bff;
+            color: white;
+        }
+        button:hover { background: #0056b3; }
+    </style>
+</head>
+<body>
+
+    <div class="box">
+        <h2>Verify You Are Human</h2>
+        <label>
+            <input type="checkbox" id="humanCheck">
+            I am not a robot
+        </label>
+        <button id="verifyBtn">Continue</button>
+    </div>
+
+    <script>
+        document.getElementById('verifyBtn').addEventListener('click', function() {
+            const checkBox = document.getElementById('humanCheck');
+            if(checkBox.checked){
+                // Human verified, go to Untitled-4.html
+                window.location.href = 'Untitled-4.html';
+            } else {
+                alert("Please confirm you are human before continuing.");
+            }
+        });
+    </script>
+
+</body>
+</html>

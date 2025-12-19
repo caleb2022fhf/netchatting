@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Home • Netless</title>
+<style>
+    body {
+        margin: 0;
+        background-color: black;
+        font-family: Arial, sans-serif;
+        color: #00ffff;
+    }
+
+    /* Header styling */
+    header {
+        display: flex;
+        justify-content: space-around;
+        align-items: center;
+        background-color: #111;
+        padding: 15px 0;
+        border-bottom: 1px solid #333;
+        position: sticky;
+        top: 0;
+        z-index: 100;
+    }
+
+    header div {
+        cursor: pointer;
+        padding: 8px 12px;
+        border-radius: 8px;
+        transition: all 0.3s ease;
+    }
+
+    header div:hover {
+        background: #00ffff;
+        color: black;
+    }
+
+    header div.active {
+        background: #00ff88;
+        color: black;
+    }
+
+    /* Video feed */
+    .video-feed {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding: 20px;
+    }
+
+    .video-card {
+        width: 90%;
+        max-width: 600px;
+        background: #111;
+        border: 2px solid #00ffff;
+        border-radius: 12px;
+        margin-bottom: 20px;
+        box-shadow: 0 0 15px #00ffff;
+        overflow: hidden;
+        transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    .video-card:hover {
+        transform: scale(1.02);
+        box-shadow: 0 0 20px #00ffff;
+    }
+
+    .video-card video {
+        width: 100%;
+        display: block;
+    }
+
+    .video-info {
+        padding: 10px;
+    }
+
+    .video-info h3 {
+        margin: 0 0 5px 0;
+        font-size: 16px;
+        color: #00ffff;
+    }
+
+    .video-info p {
+        margin: 0;
+        font-size: 14px;
+        color: #aaa;
+    }
+</style>
+</head>
+<body>
+
+<header>
+    <div onclick="switchTab('home')">Home</div>
+    <div onclick="switchTab('notification')">Notification</div>
+    <div onclick="switchTab('video')">Video</div>
+    <div onclick="switchTab('table')">Table</div>
+    <div onclick="switchTab('chat')">Chat</div>
+</header>
+
+<div class="video-feed" id="videoFeed">
+    <!-- 20 video cards -->
+    <script>
+        const videoFeed = document.getElementById('videoFeed');
+        const sampleVideos = [
+            {src: "https://www.w3schools.com/html/mov_bbb.mp4", title: "Sample Video"},
+            {src: "https://www.w3schools.com/html/movie.mp4", title: "Sample Video"}
+        ];
+
+        for(let i=1; i<=20; i++){
+            const videoData = sampleVideos[i % 2]; // alternate videos
+            const card = document.createElement('div');
+            card.className = 'video-card';
+            card.innerHTML = `
+                <video src="${videoData.src}" controls></video>
+                <div class="video-info">
+                    <h3>${videoData.title} ${i}</h3>
+                    <p>Uploaded by: User${i}</p>
+                </div>
+            `;
+            videoFeed.appendChild(card);
+        }
+    </script>
+</div>
+
+<script>
+function switchTab(tab) {
+    const tabs = document.querySelectorAll('header div');
+    tabs.forEach(t => t.classList.remove('active'));
+
+    // Add active to clicked tab
+    event.target.classList.add('active');
+
+    const feed = document.getElementById('videoFeed');
+
+    if(tab === 'home') {
+        feed.style.display = 'flex';
+    } else {
+        // Hide feed for other tabs
+        feed.style.display = 'none';
+    }
+}
+</script>
+
+</body>
+</html>

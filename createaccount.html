@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Create Account</title>
+<style>
+    body {
+        margin: 0;
+        height: 100vh;
+        background: black;
+        font-family: Arial, sans-serif;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        color: white;
+        position: relative;
+    }
+
+    .container {
+        width: 350px;
+        padding: 30px;
+        background: #111;
+        border: 2px solid #00ffff;
+        border-radius: 12px;
+        text-align: center;
+        box-shadow: 0 0 20px #00ffff;
+    }
+
+    h2 {
+        color: #00ffff;
+        margin-bottom: 20px;
+    }
+
+    input {
+        width: 100%;
+        padding: 12px;
+        margin-bottom: 15px;
+        border-radius: 6px;
+        border: none;
+        outline: none;
+        font-size: 14px;
+        background: #222;
+        color: white;
+        box-sizing: border-box;
+    }
+
+    input::placeholder {
+        color: #888;
+    }
+
+    button {
+        width: 100%;
+        padding: 12px;
+        background: #00ffff;
+        border: none;
+        border-radius: 6px;
+        font-size: 16px;
+        font-weight: bold;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        margin-bottom: 10px;
+    }
+
+    button:hover {
+        background: #00ff88;
+        box-shadow: 0 0 10px #00ff88;
+    }
+
+    .login-link {
+        margin-top: 15px;
+        font-size: 14px;
+        color: #00ffff;
+        text-decoration: none;
+        display: inline-block;
+    }
+
+    .login-link:hover {
+        color: #00ff88;
+    }
+
+    .message {
+        margin-top: 10px;
+        font-size: 14px;
+    }
+
+    .error { color: red; }
+    .success { color: #00ff88; }
+
+    /* NEON BACK ICON */
+    .back-container {
+        position: absolute;
+        top: 20px;
+        left: 20px;
+        z-index: 100;
+    }
+
+    .back-icon {
+        width: 50px;
+        height: 50px;
+        background: linear-gradient(135deg, #00ffff, #ff00ff);
+        border-radius: 50%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        cursor: pointer;
+        box-shadow: 0 0 15px #00ffff, 0 0 25px #ff00ff;
+        transition: transform 0.2s, box-shadow 0.2s;
+        margin-bottom: 20px;
+    }
+
+    .back-icon:hover {
+        transform: scale(1.1);
+        box-shadow: 0 0 20px #00ffff, 0 0 35px #ff00ff;
+    }
+
+    .back-icon svg {
+        width: 24px;
+        height: 24px;
+        fill: black;
+    }
+
+    /* Eye icon for password */
+    .password-container {
+        position: relative;
+    }
+    .eye-icon {
+        position: absolute;
+        top: 50%;
+        right: 10px;
+        transform: translateY(-50%);
+        cursor: pointer;
+        font-size: 18px;
+        color: #00ffff;
+    }
+    .eye-icon:hover { color: #00ff88; }
+
+    /* Remember Me */
+    .remember-container {
+        display: flex;
+        align-items: center;
+        font-size: 14px;
+        color: #00ffff;
+        margin-bottom: 10px;
+    }
+    .remember-container input { margin-right: 5px; }
+</style>
+</head>
+
+<body>
+
+<!-- Neon back icon -->
+<div class="back-container">
+  <div class="back-icon" onclick="window.location.href='interemail.html'" title="Go Back">
+    <svg viewBox="0 0 24 24">
+      <path d="M15.41 7.41 14 6l-6 6 6 6 1.41-1.41L10.83 12z"/>
+    </svg>
+  </div>
+</div>
+
+<div class="container">
+    <h2>Create Account</h2>
+    <input type="text" id="fullname" placeholder="Full Name" required>
+    <input type="email" id="email" placeholder="Email" required>
+
+    <div class="password-container">
+        <input type="password" id="password" placeholder="Password" required>
+        <span class="eye-icon" id="toggleEye">&#128065;</span>
+    </div>
+    <input type="password" id="confirmPassword" placeholder="Confirm Password" required>
+
+    <div class="remember-container">
+        <input type="checkbox" id="rememberMe">
+        <label for="rememberMe">Remember Me</label>
+    </div>
+    
+    <button onclick="createAccount()">Create Account</button>
+    
+    <div class="message" id="message"></div>
+
+    <!-- Updated login link to stay at interemail.html -->
+    <a href="interemail.html" class="login-link">Already have an account? Login</a>
+</div>
+
+<script>
+const toggleEye = document.getElementById("toggleEye");
+const passwordInput = document.getElementById("password");
+
+toggleEye.addEventListener("click", () => {
+    if(passwordInput.type === "password") {
+        passwordInput.type = "text";
+        toggleEye.style.color = "#00ff88";
+    } else {
+        passwordInput.type = "password";
+        toggleEye.style.color = "#00ffff";
+    }
+});
+
+function createAccount() {
+    const fullname = document.getElementById("fullname").value.trim();
+    const email = document.getElementById("email").value.trim();
+    const password = document.getElementById("password").value;
+    const confirmPassword = document.getElementById("confirmPassword").value;
+    const rememberMe = document.getElementById("rememberMe").checked;
+    const message = document.getElementById("message");
+
+    if (!fullname || !email || !password || !confirmPassword) {
+        message.textContent = "Please fill in all required fields";
+        message.className = "message error";
+        return;
+    }
+
+    if (password !== confirmPassword) {
+        message.textContent = "Passwords do not match";
+        message.className = "message error";
+        return;
+    }
+
+    // Retrieve stored accounts
+    let accounts = JSON.parse(localStorage.getItem("accounts")) || [];
+
+    // Check if email is already used
+    if(accounts.find(acc => acc.email === email)) {
+        message.textContent = "❌ This email is already used. Access denied!";
+        message.className = "message error";
+        return;
+    }
+
+    // Save account
+    accounts.push({ fullname, email, password });
+    localStorage.setItem("accounts", JSON.stringify(accounts));
+
+    // Save email in localStorage if Remember Me is checked
+    if(rememberMe) {
+        localStorage.setItem("rememberedEmail", email);
+    } else {
+        localStorage.removeItem("rememberedEmail");
+    }
+
+    message.textContent = "✅ Account created successfully!";
+    message.className = "message success";
+
+    // Redirect to post.html after 1 second
+    setTimeout(() => {
+        window.location.href = "post.html";
+    }, 1000);
+}
+
+// Pre-fill email if remembered
+window.addEventListener('load', () => {
+    const rememberedEmail = localStorage.getItem("rememberedEmail");
+    if(rememberedEmail) {
+        document.getElementById("email").value = rememberedEmail;
+        document.getElementById("rememberMe").checked = true;
+    }
+});
+</script>
+</body>
+</html>

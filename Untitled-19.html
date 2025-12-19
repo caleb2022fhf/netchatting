@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Interactions • Netless</title>
+
+<style>
+    body {
+        margin: 0;
+        font-family: Arial, sans-serif;
+        background-color: black;
+        color: #00ffff;
+    }
+
+    /* NEON BACK ICON */
+    .back-container {
+        position: absolute;
+        top: 20px;
+        left: 20px;
+        z-index: 100;
+    }
+
+    .back-icon {
+        width: 50px;
+        height: 50px;
+        background: linear-gradient(135deg, #00ffff, #ff00ff);
+        border-radius: 50%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        cursor: pointer;
+        box-shadow: 0 0 15px #00ffff, 0 0 25px #ff00ff;
+        transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    .back-icon:hover {
+        transform: scale(1.1);
+        box-shadow: 0 0 20px #00ffff, 0 0 35px #ff00ff;
+    }
+
+    .back-icon svg {
+        width: 24px;
+        height: 24px;
+        fill: black;
+    }
+
+    header {
+        position: sticky;
+        top: 0;
+        background-color: #111;
+        padding: 15px;
+        text-align: center;
+        border-bottom: 1px solid #333;
+        z-index: 50;
+    }
+
+    header h1 {
+        margin: 0;
+        font-size: 28px;
+        color: #00ffff;
+        text-shadow: 2px 2px 5px #ff00ff;
+    }
+
+    .interaction-section {
+        padding: 80px 20px 20px;
+        max-width: 600px;
+        margin: auto;
+    }
+
+    .interaction-card {
+        background-color: #111;
+        border: 1px solid #333;
+        border-radius: 10px;
+        padding: 15px;
+        margin-bottom: 15px;
+        transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    .interaction-card:hover {
+        transform: scale(1.02);
+        box-shadow: 0 0 15px #00ffff, 0 0 25px #ff00ff;
+    }
+
+    .interaction-card h2 {
+        margin: 0 0 10px;
+        font-size: 20px;
+        color: #00ffff;
+    }
+
+    .interaction-item {
+        display: flex;
+        justify-content: space-between;
+        color: #aaa;
+        font-size: 14px;
+        margin-bottom: 6px;
+    }
+
+    .interaction-item span {
+        color: #00ffff;
+    }
+</style>
+</head>
+
+<body>
+
+<!-- Back Icon -->
+<div class="back-container">
+  <div class="back-icon" onclick="window.location.href='Untitled-17.html'" title="Go Back">
+    <svg viewBox="0 0 24 24">
+      <path d="M15.41 7.41 14 6l-6 6 6 6 1.41-1.41L10.83 12z"/>
+    </svg>
+  </div>
+</div>
+
+<header>
+    <h1>Interactions</h1>
+</header>
+
+<div class="interaction-section">
+
+    <div class="interaction-card">
+        <h2>Likes</h2>
+        <div class="interaction-item">Posts liked <span>124</span></div>
+        <div class="interaction-item">Comments liked <span>58</span></div>
+        <div class="interaction-item">Stories liked <span>33</span></div>
+    </div>
+
+    <div class="interaction-card">
+        <h2>Comments</h2>
+        <div class="interaction-item">Comments made <span>37</span></div>
+        <div class="interaction-item">Replies received <span>21</span></div>
+        <div class="interaction-item">Mentions <span>9</span></div>
+    </div>
+
+    <div class="interaction-card">
+        <h2>Shares</h2>
+        <div class="interaction-item">Posts shared <span>18</span></div>
+        <div class="interaction-item">Stories shared <span>7</span></div>
+        <div class="interaction-item">Links shared <span>12</span></div>
+    </div>
+
+    <div class="interaction-card">
+        <h2>Profile Activity</h2>
+        <div class="interaction-item">Profile visits <span>96</span></div>
+        <div class="interaction-item">New followers <span>14</span></div>
+        <div class="interaction-item">Follow requests <span>3</span></div>
+    </div>
+
+</div>
+
+</body>
+</html>

@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Upload Your Photo</title>
+<style>
+    body {
+        background-color: black;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        min-height: 100vh;
+        margin: 0;
+        font-family: Arial, sans-serif;
+        color: white;
+        text-align: center;
+        padding: 20px;
+    }
+
+    h1 {
+        color: #00ffff;
+        margin-bottom: 5px;
+    }
+
+    #usernameDisplay {
+        color: #ff00ff;
+        font-size: 18px;
+        margin-bottom: 15px;
+    }
+
+    #promoText {
+        color: #ffffff;
+        font-size: 16px;
+        margin-bottom: 20px;
+        max-width: 400px;
+        line-height: 1.5;
+    }
+
+    #photoInput {
+        display: none; /* hide default file input */
+    }
+
+    #uploadBtn {
+        padding: 10px 20px;
+        background-color: #00ffff;
+        color: black;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 16px;
+        border: none;
+        margin-bottom: 20px;
+    }
+
+    #uploadBtn:hover {
+        background-color: #ff00ff;
+        color: white;
+    }
+
+    #preview {
+        display: none;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .photo-container {
+        position: relative;
+        width: 200px;
+        height: 200px;
+    }
+
+    #uploadedPhoto {
+        width: 100%;
+        height: 100%;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 3px solid #00ffff;
+        background-color: #222;
+    }
+
+    #addIcon {
+        position: absolute;
+        bottom: 0;
+        right: 0;
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        background-color: #00ffff;
+        color: black;
+        font-size: 30px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        border: 2px solid white;
+        cursor: pointer;
+    }
+
+    #addIcon:hover {
+        background-color: #ff00ff;
+        color: white;
+    }
+
+    #continueBtn {
+        margin-top: 15px;
+        padding: 8px 15px;
+        background-color: #00ffff;
+        color: black;
+        border-radius: 5px;
+        border: none;
+        cursor: pointer;
+        font-size: 16px;
+    }
+
+    #continueBtn:hover {
+        background-color: #ff00ff;
+        color: white;
+    }
+</style>
+</head>
+<body>
+
+<h1>Upload Your Photo</h1>
+
+<!-- DISPLAY REGISTERED NAME -->
+<div id="usernameDisplay"></div>
+
+<!-- Promotional Paragraph -->
+<div id="promoText">
+Join our vibrant community by uploading your photo! Personalize your profile and start connecting with people who share your interests. The more you share, the more exciting your experience becomes. Don’t wait—make your mark and discover what’s waiting for you today!
+</div>
+
+<!-- Hidden file input -->
+<input type="file" id="photoInput" accept="image/*">
+
+<!-- Upload Photo Button -->
+<button id="uploadBtn">Upload Photo</button>
+
+<!-- Preview Section -->
+<div id="preview">
+    <div class="photo-container">
+        <img id="uploadedPhoto" src="" alt="Your Photo">
+        <div id="addIcon">+</div>
+    </div>
+    <button id="continueBtn">Continue</button>
+</div>
+
+<script>
+/* DISPLAY USER NAME */
+const username = localStorage.getItem("username");
+const secondName = localStorage.getItem("secondName");
+if(username && secondName){
+    document.getElementById("usernameDisplay").textContent = `Welcome, ${username} ${secondName}`;
+} else {
+    document.getElementById("usernameDisplay").textContent = "Welcome!";
+}
+
+/* PHOTO UPLOAD LOGIC */
+const photoInput = document.getElementById('photoInput');
+const uploadBtn = document.getElementById('uploadBtn');
+const preview = document.getElementById('preview');
+const uploadedPhoto = document.getElementById('uploadedPhoto');
+const addIcon = document.getElementById('addIcon');
+const continueBtn = document.getElementById('continueBtn');
+
+uploadBtn.addEventListener('click', () => photoInput.click());
+
+photoInput.addEventListener('change', () => {
+    const file = photoInput.files[0];
+    if(file){
+        const reader = new FileReader();
+        reader.onload = e => {
+            uploadedPhoto.src = e.target.result;
+            preview.style.display = 'flex';
+            uploadBtn.style.display = 'none';
+            document.getElementById('promoText').style.display = 'none';
+        };
+        reader.readAsDataURL(file);
+    }
+});
+
+addIcon.addEventListener('click', () => photoInput.click());
+
+continueBtn.addEventListener('click', () => {
+    window.location.href = "Untitled-5.html"; // redirect to your next page
+});
+</script>
+
+</body>
+</html>

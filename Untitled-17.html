@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Your Activity • Netless</title>
+<style>
+    body {
+        margin: 0;
+        font-family: Arial, sans-serif;
+        background-color: black;
+        color: #00ffff;
+    }
+
+    /* NEON BACK ICON */
+    .back-container {
+        position: absolute;
+        top: 20px;
+        left: 20px;
+        z-index: 100;
+    }
+
+    .back-icon {
+        width: 50px;
+        height: 50px;
+        background: linear-gradient(135deg, #00ffff, #ff00ff);
+        border-radius: 50%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        cursor: pointer;
+        box-shadow: 0 0 15px #00ffff, 0 0 25px #ff00ff;
+        transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    .back-icon:hover {
+        transform: scale(1.1);
+        box-shadow: 0 0 20px #00ffff, 0 0 35px #ff00ff;
+    }
+
+    .back-icon svg {
+        width: 24px;
+        height: 24px;
+        fill: black;
+    }
+
+    header {
+        position: sticky;
+        top: 0;
+        background-color: #111;
+        padding: 15px;
+        text-align: center;
+        border-bottom: 1px solid #333;
+        z-index: 50;
+    }
+
+    header h1 {
+        margin: 0;
+        font-size: 28px;
+        color: #00ffff;
+        text-shadow: 2px 2px 5px #ff00ff;
+    }
+
+    .activity-section {
+        padding: 80px 20px 20px 20px;
+        max-width: 600px;
+        margin: 0 auto;
+    }
+
+    .activity-card {
+        background-color: #111;
+        border: 1px solid #333;
+        border-radius: 10px;
+        padding: 15px;
+        margin-bottom: 15px;
+        transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    .activity-card:hover {
+        transform: scale(1.02);
+        box-shadow: 0 0 15px #00ffff, 0 0 25px #ff00ff;
+    }
+
+    .clickable {
+        cursor: pointer;
+    }
+
+    .activity-card h2 {
+        margin: 0 0 10px 0;
+        font-size: 20px;
+        color: #00ffff;
+    }
+
+    .activity-card p {
+        color: #aaa;
+        font-size: 14px;
+        margin: 0;
+    }
+</style>
+</head>
+<body>
+
+<!-- Neon back icon -->
+<div class="back-container">
+  <div class="back-icon" onclick="window.location.href='Untitled-5.html'" title="Go Back">
+    <svg viewBox="0 0 24 24">
+      <path d="M15.41 7.41 14 6l-6 6 6 6 1.41-1.41L10.83 12z"/>
+    </svg>
+  </div>
+</div>
+
+<header>
+    <h1>Your Activity</h1>
+</header>
+
+<div class="activity-section">
+
+    <!-- TIME SPENT -->
+    <div class="activity-card clickable" onclick="window.location.href='Untitled-18.html'">
+        <h2>Time Spent</h2>
+        <p>Average daily usage: 2h 35min</p>
+        <p>This week: 17h 45min</p>
+    </div>
+
+    <!-- INTERACTIONS -->
+    <div class="activity-card clickable" onclick="window.location.href='Untitled-19.html'">
+        <h2>Interactions</h2>
+        <p>Posts liked: 124</p>
+        <p>Comments made: 37</p>
+        <p>Stories viewed: 52</p>
+    </div>
+
+    <!-- ACCOUNT HISTORY -->
+    <div class="activity-card clickable" onclick="window.location.href='Untitled-20.html'">
+        <h2>Account History</h2>
+        <p>Password changed: 1 week ago</p>
+        <p>Emails updated: 2 months ago</p>
+        <p>Login from new device: 3 days ago</p>
+    </div>
+
+    <!-- RECENT SEARCHES -->
+    <div class="activity-card clickable" onclick="window.location.href='Untitled-21.html'">
+        <h2>Recent Searches</h2>
+        <p>@john_doe</p>
+        <p>@nishimwepaulette</p>
+        <p>@nature_photos</p>
+    </div>
+
+</div>
+
+</body>
+</html>

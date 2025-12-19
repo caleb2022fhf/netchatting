@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Switch Account • Netless</title>
+<style>
+body {
+    background: black;
+    font-family: Arial, sans-serif;
+    color: #00ffff;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px;
+    margin: 0;
+    height: 100vh;
+}
+
+/* Header */
+header {
+    width: 100%;
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+header h1 {
+    font-size: 36px;
+    text-shadow: 2px 2px 5px #ff00ff;
+}
+
+/* Accounts List */
+.account-list {
+    width: 100%;
+    max-width: 400px;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.account-item {
+    display: flex;
+    align-items: center;
+    background: #111;
+    padding: 10px 15px;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.account-item:hover {
+    background: #222;
+}
+
+.account-avatar {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background: gray;
+    margin-right: 15px;
+}
+
+.account-username {
+    font-weight: bold;
+    font-size: 18px;
+}
+
+/* Buttons */
+.switch-btn, .logout-btn {
+    margin-top: 20px;
+    padding: 12px;
+    width: 100%;
+    max-width: 400px;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: bold;
+    text-align: center;
+    transition: background 0.3s;
+}
+
+.switch-btn {
+    background: #007bff;
+    color: white;
+}
+
+.switch-btn:hover {
+    background: #0056b3;
+}
+
+.logout-btn {
+    background: #ff0044;
+    color: white;
+}
+
+.logout-btn:hover {
+    background: #c30033;
+}
+</style>
+</head>
+<body>
+
+<header>
+    <h1>Switch Account</h1>
+</header>
+
+<div class="account-list">
+    <div class="account-item" onclick="switchToAccount('aimecaleb05')">
+        <div class="account-avatar"></div>
+        <div class="account-username">aimecaleb05</div>
+    </div>
+    <div class="account-item" onclick="switchToAccount('john_doe')">
+        <div class="account-avatar"></div>
+        <div class="account-username">john_doe</div>
+    </div>
+    <div class="account-item" onclick="switchToAccount('jane_smith')">
+        <div class="account-avatar"></div>
+        <div class="account-username">jane_smith</div>
+    </div>
+</div>
+
+<button class="switch-btn" onclick="addAccount()">Add Account</button>
+<button class="logout-btn" onclick="logoutAll()">Log Out of All Accounts</button>
+
+<script>
+// Assume this is the currently logged-in account
+let currentAccount = localStorage.getItem('currentAccount') || 'aimecaleb05';
+
+// Switch to an existing account
+function switchToAccount(username) {
+    localStorage.setItem('currentAccount', username);
+    window.location.href = 'Untitled-2.html';
+}
+
+// Add current account to saved accounts and stay at Untitled-2
+function addAccount() {
+    let savedAccounts = JSON.parse(localStorage.getItem('savedAccounts')) || [];
+    if (!savedAccounts.includes(currentAccount)) {
+        savedAccounts.push(currentAccount);
+        localStorage.setItem('savedAccounts', JSON.stringify(savedAccounts));
+    }
+    localStorage.setItem('currentAccount', currentAccount);
+    window.location.href = 'Untitled-2.html';
+}
+
+// Log out of all accounts
+function logoutAll() {
+    localStorage.removeItem('currentAccount');
+    window.location.href = 'Untitled-2.html';
+}
+</script>
+
+</body>
+</html>

@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Login Page</title>
+<style>
+    body {
+        margin: 0;
+        height: 100vh;
+        background-color: black;
+        font-family: Arial, sans-serif;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        color: white;
+        position: relative;
+    }
+
+    .container {
+        width: 350px;
+        padding: 30px;
+        background: #111;
+        border: 2px solid #00ffff;
+        border-radius: 12px;
+        text-align: center;
+        box-shadow: 0 0 20px #00ffff;
+    }
+
+    h2 {
+        color: #00ffff;
+        margin-bottom: 20px;
+    }
+
+    input {
+        width: 100%;
+        padding: 12px;
+        margin-bottom: 15px;
+        border-radius: 6px;
+        border: none;
+        outline: none;
+        font-size: 14px;
+        background: #222;
+        color: white;
+        box-sizing: border-box;
+    }
+
+    input::placeholder {
+        color: #888;
+    }
+
+    button {
+        width: 100%;
+        padding: 12px;
+        background: #00ffff;
+        border: none;
+        border-radius: 6px;
+        font-size: 16px;
+        font-weight: bold;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        margin-bottom: 10px;
+    }
+
+    button:hover {
+        background: #00ff88;
+        box-shadow: 0 0 10px #00ff88;
+    }
+
+    .message {
+        margin-top: 10px;
+        font-size: 14px;
+    }
+
+    .error { color: red; }
+    .success { color: #00ff88; }
+
+    .back-container {
+        position: absolute;
+        top: 20px;
+        left: 20px;
+        z-index: 100;
+    }
+
+    .back-icon {
+        width: 50px;
+        height: 50px;
+        background: linear-gradient(135deg, #00ffff, #ff00ff);
+        border-radius: 50%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        cursor: pointer;
+        box-shadow: 0 0 15px #00ffff, 0 0 25px #ff00ff;
+        transition: transform 0.2s, box-shadow 0.2s;
+        margin-bottom: 20px;
+    }
+
+    .back-icon:hover {
+        transform: scale(1.1);
+        box-shadow: 0 0 20px #00ffff, 0 0 35px #ff00ff;
+    }
+
+    .back-icon svg {
+        width: 24px;
+        height: 24px;
+        fill: black;
+    }
+</style>
+</head>
+<body>
+
+<div class="back-container">
+  <div class="back-icon" onclick="window.location.href='interemail.html'" title="Go Back">
+    <svg viewBox="0 0 24 24">
+      <path d="M15.41 7.41 14 6l-6 6 6 6 1.41-1.41L10.83 12z"/>
+    </svg>
+  </div>
+</div>
+
+<div class="container">
+    <h2>Login</h2>
+    <input type="text" id="username" placeholder="Username" required>
+    <input type="password" id="password" placeholder="Password" required>
+    <button onclick="login()">Login</button>
+    <div class="message" id="message"></div>
+</div>
+
+<script>
+function login() {
+    const username = document.getElementById("username").value.trim();
+    const password = document.getElementById("password").value.trim();
+    const message = document.getElementById("message");
+
+    if(!username || !password) {
+        message.textContent = "Please enter both username and password.";
+        message.className = "message error";
+        return;
+    }
+
+    // Example check: you can replace this with real account validation
+    if(username === "user" && password === "123456") {
+        message.textContent = "✅ Login successful!";
+        message.className = "message success";
+
+        // Stay on interemail.html
+        setTimeout(() => {
+            window.location.href = "interemail.html";
+        }, 500);
+    } else {
+        message.textContent = "❌ Invalid username or password!";
+        message.className = "message error";
+    }
+}
+</script>
+
+</body>
+</html>

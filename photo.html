@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Photos • Netless</title>
+
+<style>
+body {
+  margin: 0;
+  font-family: 'Segoe UI', Arial, sans-serif;
+  background: black;
+  color: white;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  padding: 15px 20px;
+  border-bottom: 1px solid rgba(255,255,255,0.1);
+  gap: 15px;
+}
+
+.back-icon {
+  width: 45px;
+  height: 45px;
+  background: linear-gradient(135deg, #00ffff, #ff00ff);
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+}
+
+.back-icon svg {
+  width: 24px;
+  height: 24px;
+  fill: black;
+}
+
+.container {
+  padding: 20px;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 15px;
+}
+
+.photo-card {
+  width: 100%;
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1px solid #333;
+}
+
+.photo-card img {
+  width: 100%;
+  display: block;
+  border-radius: 12px;
+  object-fit: cover;
+}
+</style>
+</head>
+
+<body>
+
+<div class="header">
+  <div class="back-icon" onclick="history.back()">
+    <svg viewBox="0 0 24 24">
+      <path d="M15.41 7.41 14 6l-6 6 6 6 1.41-1.41L10.83 12z"/>
+    </svg>
+  </div>
+  <h2>Photos</h2>
+</div>
+
+<div class="container" id="photosContainer">
+  <!-- Amafoto azahita ashyirwa hano na JavaScript -->
+</div>
+
+<script>
+// Fungura amafoto yose yakoreshejwe kuri profile page
+// Tubika amafoto muri localStorage muri "profilePhotos" nk'urugero
+// Format: localStorage.setItem('profilePhotos', JSON.stringify([img1, img2, ...]));
+
+const photosContainer = document.getElementById('photosContainer');
+const savedPhotos = JSON.parse(localStorage.getItem('profilePhotos') || '[]');
+
+if(savedPhotos.length === 0){
+  photosContainer.innerHTML = "<p style='color:#00ffff'>No photos posted yet.</p>";
+} else {
+  savedPhotos.forEach(src => {
+    const card = document.createElement('div');
+    card.className = 'photo-card';
+    const img = document.createElement('img');
+    img.src = src;
+    card.appendChild(img);
+    photosContainer.appendChild(card);
+  });
+}
+</script>
+
+</body>
+</html>

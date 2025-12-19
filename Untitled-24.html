@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Messages • Netless</title>
+
+<style>
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  height: 100vh;
+  font-family: 'Segoe UI', Arial, sans-serif;
+  background: black;
+  display: flex;
+  flex-direction: column;
+  color: white;
+}
+
+/* HEADER */
+.header {
+  text-align: center;
+  font-size: 32px;
+  font-weight: bold;
+  color: #00ffff;
+  padding: 15px;
+  border-bottom: 1px solid rgba(255,255,255,0.2);
+  position: relative;
+}
+
+/* NEON BACK ICON */
+.back-container {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  z-index: 10;
+}
+
+.back-icon {
+  width: 40px;
+  height: 40px;
+  background: linear-gradient(135deg, #00ffff, #ff00ff);
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  box-shadow: 0 0 10px #00ffff, 0 0 15px #ff00ff;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.back-icon:hover {
+  transform: scale(1.1);
+  box-shadow: 0 0 15px #00ffff, 0 0 25px #ff00ff;
+}
+
+.back-icon svg {
+  width: 20px;
+  height: 20px;
+  fill: black;
+}
+
+/* APP LAYOUT */
+.app {
+  flex: 1;
+  display: flex;
+  width: 90%;
+  max-width: 1100px;
+  margin: auto;
+  background: rgba(255,255,255,0.05);
+  border-radius: 24px;
+  overflow: hidden;
+}
+
+/* SIDEBAR */
+.sidebar {
+  width: 30%;
+  background: rgba(255,255,255,0.08);
+  padding: 20px;
+}
+
+.logo {
+  font-size: 26px;
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.user {
+  display: flex;
+  align-items: center;
+  padding: 10px;
+  border-radius: 16px;
+  margin-bottom: 10px;
+  cursor: pointer;
+}
+
+.user:hover {
+  background: rgba(255,255,255,0.15);
+}
+
+.avatar {
+  width: 45px;
+  height: 45px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #ff416c, #ff4b2b);
+  margin-right: 12px;
+}
+
+.name { flex: 1; }
+
+.status-box {
+  width: 20px;
+  height: 12px;
+  border-radius: 4px;
+  background: white;
+}
+
+/* CHAT AREA */
+.chat {
+  width: 70%;
+  display: flex;
+  flex-direction: column;
+}
+
+.chat-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 20px;
+  border-bottom: 1px solid rgba(255,255,255,0.1);
+}
+
+.chat-header .buttons {
+  margin-left: auto;
+  display: flex;
+  gap: 10px;
+}
+
+/* HEXAGON BUTTONS */
+.hex-btn {
+  width: 50px;
+  height: 50px;
+  background: linear-gradient(135deg, #00ffff, #ff00ff);
+  clip-path: polygon(
+    25% 5%, 75% 5%, 
+    100% 50%, 75% 95%, 
+    25% 95%, 0% 50%
+  );
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  border: none;
+  color: black;
+  font-size: 20px;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.hex-btn:hover {
+  transform: scale(1.1);
+  box-shadow: 0 0 15px #00ffff, 0 0 25px #ff00ff;
+}
+
+/* MESSAGES */
+.messages {
+  flex: 1;
+  padding: 20px;
+  overflow-y: auto;
+}
+
+.bubble {
+  max-width: 65%;
+  padding: 14px 18px;
+  margin-bottom: 14px;
+  border-radius: 20px;
+  background: rgba(255,255,255,0.15);
+}
+
+.me { margin-left: auto; }
+
+/* INPUT AREA */
+.input {
+  display: flex;
+  gap: 10px;
+  padding: 16px;
+  border-top: 1px solid rgba(255,255,255,0.1);
+}
+
+.input input {
+  flex: 1;
+  border-radius: 20px;
+  padding: 12px 16px;
+  border: none;
+  background: rgba(255,255,255,0.15);
+  color: white;
+}
+
+.input button {
+  width: 50px;
+  height: 50px;
+  border: none;
+  cursor: pointer;
+  background: linear-gradient(135deg, #00ffff, #ff00ff);
+  clip-path: polygon(
+    25% 5%, 75% 5%, 
+    100% 50%, 75% 95%, 
+    25% 95%, 0% 50%
+  );
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 20px;
+  color: black;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.input button:hover {
+  transform: scale(1.1);
+  box-shadow: 0 0 15px #00ffff, 0 0 25px #ff00ff;
+}
+
+/* STICKERS PANEL */
+.stickers {
+  display: flex;
+  gap: 10px;
+  padding: 10px;
+  overflow-x: auto;
+  border-top: 1px solid rgba(255,255,255,0.1);
+  background: rgba(255,255,255,0.05);
+}
+.stickers img {
+  width: 50px;
+  height: 50px;
+  cursor: pointer;
+  border-radius: 10px;
+}
+</style>
+</head>
+
+<body>
+
+<div class="header">
+  <div class="back-container">
+    <div class="back-icon" onclick="history.back()">
+      <svg viewBox="0 0 24 24">
+        <path d="M15.41 7.41 14 6l-6 6 6 6 1.41-1.41L10.83 12z"/>
+      </svg>
+    </div>
+  </div>
+  Netless
+</div>
+
+<div class="app">
+
+  <div class="sidebar">
+    <div class="logo">Candidate</div>
+    <div id="userList"></div>
+  </div>
+
+  <div class="chat">
+    <div class="chat-header">
+      <div class="avatar"></div>
+      <div class="name" id="chatName">Candidate</div>
+      <div class="buttons">
+        <button class="hex-btn" title="Send Photo" onclick="sendPhoto()">📷</button>
+        <button class="hex-btn" title="Video Call" onclick="videoCall()">📹</button>
+        <button class="hex-btn" title="Audio Call" onclick="audioCall()">📞</button>
+      </div>
+    </div>
+
+    <div class="messages" id="messages"></div>
+
+    <div class="stickers" id="stickers">
+      <img src="https://twemoji.maxcdn.com/2/72x72/1f600.png" onclick="sendSticker('😀')" />
+      <img src="https://twemoji.maxcdn.com/2/72x72/1f601.png" onclick="sendSticker('😁')" />
+      <img src="https://twemoji.maxcdn.com/2/72x72/1f602.png" onclick="sendSticker('😂')" />
+    </div>
+
+    <div class="input">
+      <input type="text" id="messageInput" placeholder="Type a message..." />
+      <button id="sendBtn">➤</button>
+    </div>
+  </div>
+
+</div>
+
+<script>
+const STORAGE_KEY = "netless_chats";
+let users = ["Arid","Fitte","travaile","couragesse","sociable","obeisante"];
+let activeRecipients = new Set();
+let currentChatKey = null;
+
+const userList = document.getElementById("userList");
+const messages = document.getElementById("messages");
+const input = document.getElementById("messageInput");
+const sendBtn = document.getElementById("sendBtn");
+const chatName = document.getElementById("chatName");
+
+/* ===== USERS LIST ===== */
+users.forEach(name => {
+  const div = document.createElement("div");
+  div.className = "user";
+  div.innerHTML = `<div class="avatar"></div><div class="name">${name}</div><div class="status-box"></div>`;
+  div.onclick = () => toggleUser(name, div);
+  userList.appendChild(div);
+});
+
+/* ===== CHAT LOGIC ===== */
+function toggleUser(name, div) {
+  const box = div.querySelector(".status-box");
+  if (activeRecipients.has(name)) activeRecipients.delete(name);
+  else activeRecipients.add(name);
+
+  box.style.background = activeRecipients.has(name) ? "#00bfff" : "white";
+  chatName.textContent = [...activeRecipients].join(", ") || "Candidate";
+  loadChat();
+}
+
+function getChatKey() {
+  if (activeRecipients.size === 0) return null;
+  return [...activeRecipients].sort().join("|");
+}
+
+function getChats() {
+  return JSON.parse(localStorage.getItem(STORAGE_KEY)) || {};
+}
+
+function saveChats(data) {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+}
+
+function loadChat() {
+  messages.innerHTML = "";
+  currentChatKey = getChatKey();
+  if (!currentChatKey) return;
+
+  const chats = getChats()[currentChatKey] || [];
+  chats.forEach(m => {
+    const b = document.createElement("div");
+    b.className = "bubble me";
+    b.textContent = m;
+    messages.appendChild(b);
+  });
+  messages.scrollTop = messages.scrollHeight;
+}
+
+/* ===== SEND MESSAGE ===== */
+sendBtn.onclick = () => {
+  if (!currentChatKey) return alert("Hitamo umuntu");
+  const text = input.value.trim();
+  if (!text) return;
+  const chats = getChats();
+  if (!chats[currentChatKey]) chats[currentChatKey] = [];
+  chats[currentChatKey].push(text);
+  saveChats(chats);
+  input.value = "";
+  loadChat();
+};
+
+/* ===== SEND STICKER ===== */
+function sendSticker(sticker) {
+  if (!currentChatKey) return;
+  const chats = getChats();
+  if (!chats[currentChatKey]) chats[currentChatKey] = [];
+  chats[currentChatKey].push(sticker);
+  saveChats(chats);
+  loadChat();
+}
+
+/* ===== SEND PHOTO / VIDEO / AUDIO PLACEHOLDER ===== */
+function sendPhoto() { alert("Send Photo clicked!"); }
+function videoCall() { alert("Video Call clicked!"); }
+function audioCall() { alert("Audio Call clicked!"); }
+
+/* ===== REAL-TIME UPDATE ===== */
+window.addEventListener("storage", e => {
+  if (e.key === STORAGE_KEY) loadChat();
+});
+</script>
+
+</body>
+</html>

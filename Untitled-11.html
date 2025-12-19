@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Privacy Settings</title>
+<style>
+    body {
+        background-color: black; /* dark background */
+        font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 0;
+        color: white; /* text in white for contrast */
+    }
+
+    /* NEON BACK ICON */
+    .back-container {
+        padding: 15px 20px;
+    }
+
+    .back-icon {
+        width: 50px;
+        height: 50px;
+        background: linear-gradient(135deg, #00ffff, #ff00ff);
+        border-radius: 50%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        cursor: pointer;
+        box-shadow: 0 0 15px #00ffff, 0 0 25px #ff00ff;
+        transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    .back-icon:hover {
+        transform: scale(1.1);
+        box-shadow: 0 0 20px #00ffff, 0 0 35px #ff00ff;
+    }
+
+    .back-icon svg {
+        width: 24px;
+        height: 24px;
+        fill: black;
+    }
+
+    header {
+        background-color: #1a1a1a; /* darker header for contrast */
+        color: #00ffff; /* neon blue title for visibility */
+        padding: 15px 20px;
+        font-size: 24px;
+    }
+
+    .container {
+        max-width: 800px;
+        margin: 30px auto;
+        background: #111; /* dark card background */
+        border-radius: 8px;
+        box-shadow: 0 0 15px rgba(0, 255, 255, 0.2);
+        padding: 20px;
+    }
+
+    h2 {
+        color: #00ffff; /* headings in cyan */
+        margin-bottom: 15px;
+    }
+
+    .setting {
+        border-bottom: 1px solid #333;
+        padding: 15px 0;
+    }
+
+    .setting:last-child {
+        border-bottom: none;
+    }
+
+    .setting label {
+        display: block;
+        margin-bottom: 5px;
+        font-weight: bold;
+        color: white;
+    }
+
+    select, input[type="checkbox"] {
+        margin-top: 5px;
+    }
+
+    select {
+        background-color: #222;
+        color: white;
+        border: 1px solid #444;
+        padding: 5px;
+        border-radius: 4px;
+    }
+
+    .save-btn {
+        margin-top: 20px;
+        background-color: #00ffff;
+        color: black;
+        padding: 10px 20px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 16px;
+        font-weight: bold;
+    }
+
+    .save-btn:hover {
+        background-color: #00bfbf;
+    }
+</style>
+</head>
+<body>
+
+<!-- Back icon inside a div -->
+<div class="back-container">
+    <div class="back-icon" onclick="history.back()" title="Go Back">
+        <svg viewBox="0 0 24 24">
+            <path d="M15.41 7.41 14 6l-6 6 6 6 1.41-1.41L10.83 12z"/>
+        </svg>
+    </div>
+</div>
+
+<header>Privacy Settings</header>
+
+<div class="container">
+    <h2>Who can see your posts?</h2>
+    <div class="setting">
+        <label for="post-visibility">Post Visibility</label>
+        <select id="post-visibility">
+            <option value="public">Public</option>
+            <option value="friends">Friends</option>
+            <option value="only-me">Only Me</option>
+        </select>
+    </div>
+
+    <h2>Profile & Tagging</h2>
+    <div class="setting">
+        <label>
+            <input type="checkbox" checked> Allow others to tag me in posts
+        </label>
+    </div>
+    <div class="setting">
+        <label>
+            <input type="checkbox"> Review tags before they appear on my profile
+        </label>
+    </div>
+
+    <h2>Connections</h2>
+    <div class="setting">
+        <label>
+            <input type="checkbox" checked> Allow friend requests
+        </label>
+    </div>
+
+    <button class="save-btn">Save Changes</button>
+</div>
+
+</body>
+</html>

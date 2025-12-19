@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Report a Problem • Instagram</title>
+<style>
+    body {
+        margin: 0;
+        font-family: Arial, sans-serif;
+        background-color: #121212;
+        color: #ffffff;
+    }
+    .container {
+        max-width: 600px;
+        margin: 40px auto;
+        padding: 20px;
+        background-color: #1e1e1e;
+        border-radius: 10px;
+        box-shadow: 0 0 10px rgba(0,0,0,0.5);
+    }
+    h1 {
+        text-align: center;
+        color: #ff2d55;
+    }
+    label {
+        display: block;
+        margin-top: 15px;
+        font-weight: bold;
+    }
+    input, textarea, select {
+        width: 100%;
+        padding: 10px;
+        margin-top: 5px;
+        border-radius: 5px;
+        border: none;
+        background-color: #2a2a2a;
+        color: #ffffff;
+        resize: vertical;
+    }
+    input[type="file"] {
+        padding: 3px;
+    }
+    button {
+        margin-top: 20px;
+        padding: 12px;
+        width: 100%;
+        border: none;
+        border-radius: 5px;
+        background-color: #ff2d55;
+        color: #ffffff;
+        font-size: 16px;
+        cursor: pointer;
+    }
+    button:hover {
+        background-color: #ff5a7a;
+    }
+    small {
+        color: #bbbbbb;
+    }
+</style>
+</head>
+<body>
+
+<div class="container">
+    <h1>Report a Problem</h1>
+    <form action="#" method="post" enctype="multipart/form-data">
+        <label for="description">Problem Description</label>
+        <textarea id="description" name="description" rows="4" placeholder="Explain what’s happening..." required></textarea>
+
+        <label for="steps">Steps to Reproduce</label>
+        <textarea id="steps" name="steps" rows="3" placeholder="Step by step instructions..." required></textarea>
+
+        <label for="device">Device & OS</label>
+        <input type="text" id="device" name="device" placeholder="e.g., iPhone 14, iOS 17.2" required>
+
+        <label for="appversion">Instagram App Version</label>
+        <input type="text" id="appversion" name="appversion" placeholder="e.g., 284.0" required>
+
+        <label for="network">Network</label>
+        <select id="network" name="network" required>
+            <option value="">Select network type</option>
+            <option value="wifi">Wi-Fi</option>
+            <option value="mobile">Mobile Data</option>
+            <option value="other">Other</option>
+        </select>
+
+        <label for="frequency">Frequency of Issue</label>
+        <select id="frequency" name="frequency" required>
+            <option value="">Select frequency</option>
+            <option value="always">Always</option>
+            <option value="sometimes">Sometimes</option>
+            <option value="rarely">Rarely</option>
+        </select>
+
+        <label for="impact">Impact</label>
+        <select id="impact" name="impact" required>
+            <option value="">Select impact</option>
+            <option value="minor">Minor inconvenience</option>
+            <option value="cannot_use_feature">Cannot use feature</option>
+            <option value="account_locked">Account locked</option>
+        </select>
+
+        <label for="screenshot">Screenshot / Video (optional)</label>
+        <input type="file" id="screenshot" name="screenshot" accept="image/*,video/*">
+
+        <button type="submit">Submit Report</button>
+    </form>
+</div>
+
+</body>
+</html>

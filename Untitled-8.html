@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Friends</title>
+<style>
+body{
+  margin:0;
+  font-family:Arial, sans-serif;
+  background:black;
+  color:white;
+}
+.header{
+  display:flex;
+  justify-content:space-around;
+  align-items:center;
+  background:#111;
+  padding:10px;
+  position:sticky;
+  top:0;
+}
+.header button{
+  background:none;
+  border:none;
+  color:white;
+  font-size:16px;
+  cursor:pointer;
+}
+.header button.active{
+  border-bottom:2px solid #1877f2;
+}
+.container{
+  max-width:600px;
+  margin:auto;
+  padding:15px;
+}
+.card{
+  background:#1c1c1c;
+  border-radius:10px;
+  padding:10px;
+  margin-bottom:10px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+}
+.user{
+  display:flex;
+  align-items:center;
+  gap:10px;
+}
+.avatar{
+  width:45px;
+  height:45px;
+  border-radius:50%;
+  background:#555;
+}
+.actions button{
+  margin-left:5px;
+  padding:5px 10px;
+  border:none;
+  border-radius:6px;
+  cursor:pointer;
+}
+.tick{background:#1877f2;color:white;}
+.delete{background:#444;color:white;}
+.hidden{display:none;}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <button class="active" onclick="showAllPeople()">Friends (<span id="friendCount">0</span>)</button>
+  <button onclick="showTab('requests')">Requests (<span id="requestCount">0</span>)</button>
+  <button onclick="showTab('suggestions')">Suggestions (<span id="suggestionCount">0</span>)</button>
+</div>
+
+<div class="container">
+
+  <!-- Friends List -->
+  <div id="friends">
+    <h3>All Friends</h3>
+  </div>
+
+  <!-- Friend Requests -->
+  <div id="requests" class="hidden">
+    <h3>Friend Requests</h3>
+    <div class="card"><div class="user"><div class="avatar"></div> User 1</div><div class="actions"><button class="tick" onclick="tickBack(this)">Tick Back</button><button class="delete" onclick="remove(this)">Delete</button></div></div>
+    <div class="card"><div class="user"><div class="avatar"></div> User 2</div><div class="actions"><button class="tick" onclick="tickBack(this)">Tick Back</button><button class="delete" onclick="remove(this)">Delete</button></div></div>
+  </div>
+
+  <!-- Suggestions -->
+  <div id="suggestions" class="hidden">
+    <h3>People You May Know</h3>
+    <div class="card"><div class="user"><div class="avatar"></div> Suggestion 1</div><div class="actions"><button class="tick" onclick="addFriend(this)">Tick</button></div></div>
+    <div class="card"><div class="user"><div class="avatar"></div> Suggestion 2</div><div class="actions"><button class="tick" onclick="addFriend(this)">Tick</button></div></div>
+  </div>
+
+</div>
+
+<script>
+function showTab(tab){
+  document.getElementById('friends').classList.add('hidden');
+  document.getElementById('requests').classList.add('hidden');
+  document.getElementById('suggestions').classList.add('hidden');
+  document.getElementById(tab).classList.remove('hidden');
+
+  document.querySelectorAll('.header button').forEach(b=>b.classList.remove('active'));
+  event.target.classList.add('active');
+}
+
+function tickBack(btn){
+  const card = btn.closest('.card');
+  const name = card.querySelector('.user').textContent.trim();
+
+  // Button ihinduka "Ticking"
+  btn.textContent = 'Ticking';
+  btn.disabled = true;
+
+  // Shyira izina mu Messages list kuri page "Untitled-6"
+  let messages = JSON.parse(localStorage.getItem('messagesList')) || [];
+  if (!messages.includes(name)) messages.push(name);
+  localStorage.setItem('messagesList', JSON.stringify(messages));
+
+  // Siba card muri Requests
+  card.remove();
+
+  // Refresh Friends list (yerekana Requests + Suggestions basigaye)
+  showAllPeople();
+
+  // Update imibare
+  updateCounts();
+}
+
+function addFriend(btn){
+  const card = btn.closest('.card');
+  // Tick muri Suggestions ntabwo yohereza amazina muri Messages list
+  card.remove();
+
+  // Refresh Friends list (yerekana Requests + Suggestions basigaye)
+  showAllPeople();
+
+  // Update imibare
+  updateCounts();
+}
+
+function remove(btn){
+  btn.closest('.card').remove();
+  updateCounts();
+}
+
+function updateCounts(){
+  const requestTotal = document.querySelectorAll('#requests .card').length;
+  const suggestionTotal = document.querySelectorAll('#suggestions .card').length;
+
+  // Friends count = Requests + Suggestions
+  document.getElementById('friendCount').textContent = requestTotal + suggestionTotal;
+  document.getElementById('requestCount').textContent = requestTotal;
+  document.getElementById('suggestionCount').textContent = suggestionTotal;
+}
+
+function showAllPeople(){
+  const friendsList = document.getElementById('friends');
+  friendsList.innerHTML = '<h3>All Friends</h3>';
+
+  // Add all from Requests
+  document.querySelectorAll('#requests .card').forEach(card => {
+    const clone = card.cloneNode(true);
+    clone.querySelector('.actions')?.remove();
+    friendsList.appendChild(clone);
+  });
+
+  // Add all from Suggestions
+  document.querySelectorAll('#suggestions .card').forEach(card => {
+    const clone = card.cloneNode(true);
+    clone.querySelector('.actions')?.remove();
+    friendsList.appendChild(clone);
+  });
+
+  updateCounts();
+}
+
+// Initialize counts on page load
+updateCounts();
+</script>
+
+</body>
+</html>

@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Net Chat Home</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: Arial, sans-serif;
+  background: black;
+  color: white;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+/* HEADER */
+header {
+  background: #111;
+  border-bottom: 1px solid #333;
+  padding: 15px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+header h1 {
+  color: #00ffff;
+  font-size: 36px;
+  text-shadow: 2px 2px 5px #ff00ff;
+  letter-spacing: 2px;
+}
+
+/* SEARCH */
+.search-container {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.search-container input {
+  padding: 6px 10px;
+  border-radius: 5px;
+  border: none;
+  width: 180px;
+  font-size: 14px;
+  outline: none;
+}
+.search-container input::placeholder {
+  color: #888;
+}
+
+/* HEADER BUTTONS */
+.nav-icons {
+  display: flex;
+  gap: 10px;
+}
+
+.nav-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 5px;
+  border-radius: 8px;
+  transition: background 0.3s, transform 0.2s;
+}
+
+.nav-btn img {
+  width: 24px;
+  height: 24px;
+  filter: invert(100%);
+}
+
+.nav-btn:hover {
+  background: rgba(0, 255, 255, 0.2);
+  transform: scale(1.1);
+}
+
+/* MAIN LAYOUT */
+.container {
+  display: flex;
+  justify-content: center;
+  padding: 20px;
+  gap: 20px;
+  flex: 1;
+}
+
+/* LEFT SIDEBAR */
+.left-sidebar {
+  width: 180px;
+  background: #111;
+  border: 1px solid #333;
+  border-radius: 6px;
+  padding: 15px;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.left-sidebar div {
+  cursor: pointer;
+  padding: 8px;
+  border-radius: 5px;
+  transition: background 0.3s;
+}
+
+.left-sidebar div:hover {
+  background: rgba(0, 255, 255, 0.2);
+}
+
+/* USER PROFILE */
+#userProfile {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+#userProfile img {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+/* MAIN FEED */
+.feed {
+  max-width: 600px;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* STORIES */
+.stories {
+  display: flex;
+  gap: 10px;
+  padding: 10px;
+  background: #111;
+  border: 1px solid #333;
+  border-radius: 4px;
+}
+
+.story {
+  text-align: center;
+}
+
+.story img {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  border: 2px solid #c13584;
+}
+
+.story p {
+  font-size: 12px;
+  margin-top: 5px;
+}
+
+/* POSTS */
+.post {
+  background: #111;
+  border: 1px solid #333;
+  border-radius: 4px;
+}
+
+.post-header, .post-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px;
+}
+
+.avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: gray;
+}
+
+.username {
+  font-weight: bold;
+}
+
+.post-image {
+  height: 350px;
+  background: #222;
+  position: relative;
+}
+
+/* Video section inside posts */
+.video-section {
+  position: absolute;
+  bottom: 10px;
+  left: 10px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.video-section img {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: 2px solid #00ffff;
+}
+
+.video-section .name {
+  font-size: 14px;
+  font-weight: bold;
+  color: #00ffff;
+}
+
+.video-section .online {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: lime;
+}
+
+/* RIGHT SIDEBAR */
+.right-sidebar {
+  width: 180px;
+  background: #111;
+  border: 1px solid #333;
+  border-radius: 6px;
+  padding: 15px;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.right-sidebar div {
+  padding: 5px;
+}
+
+/* FOOTER */
+footer {
+  display: flex;
+  justify-content: space-around;
+  background: #111;
+  border-top: 1px solid #333;
+  padding: 10px 0;
+  position: sticky;
+  bottom: 0;
+}
+
+.footer-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+.footer-btn img {
+  width: 24px;
+  height: 24px;
+  filter: invert(100%);
+}
+
+/* HAMBURGER MENU */
+#hamburgerMenu {
+  display: none;
+  position: absolute;
+  top: 60px;
+  right: 20px;
+  background: white;
+  color: black;
+  padding: 15px;
+  border-radius: 10px;
+  box-shadow: 0 0 10px rgba(255,255,255,0.2);
+  z-index: 200;
+}
+
+#hamburgerMenu a {
+  display: block;
+  text-decoration: none;
+  color: black;
+  padding: 5px 0;
+  font-weight: bold;
+}
+
+#hamburgerMenu a:hover {
+  color: #007bff;
+}
+
+/* Search Result Container */
+#searchResultContainer {
+  margin-top: 10px;
+}
+#searchResultContainer div {
+  padding: 10px;
+  background: #111;
+  border: 1px solid #333;
+  border-radius: 6px;
+}
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Net Chat</h1>
+  <div class="nav-icons">
+    <div class="search-container">
+      <input type="text" id="searchInput" placeholder="Search...">
+      <button class="nav-btn"><img src="https://img.icons8.com/material-outlined/24/000000/search--v1.png"></button>
+    </div>
+  </div>
+
+  <div id="hamburgerMenu">
+    <a href="#" onclick="goToYourActivity()">Your Activity</a>
+    <a href="#" onclick="goToReportProblem()">Report a Problem</a>
+    <a href="#" onclick="switchAccount()">Switch Account</a>
+    <a href="#" onclick="logOut()">Log Out</a>
+  </div>
+</header>
+
+<div class="container">
+  <div class="left-sidebar">
+    <div id="userProfile">
+      <img id="userAvatar" src="" alt="Profile Picture">
+      <div id="userName"></div>
+    </div>
+    <div>Friends</div>
+    <div>Shortcuts</div>
+  </div>
+
+  <div class="feed">
+    <div class="stories">
+      <div class="story"><img src=""><p>User1</p></div>
+      <div class="story"><img src=""><p>User2</p></div>
+      <div class="story"><p>User3</p></div>
+      <div class="story"><p>User4</p></div>
+    </div>
+
+    <div class="post">
+      <div class="post-header">
+        <div class="avatar"></div>
+        <div class="username">Aime Caleb</div>
+      </div>
+      <div class="post-image">
+        <div class="video-section">
+          <img src="">
+          <div class="name">User1</div>
+          <div class="online"></div>
+        </div>
+      </div>
+      <div class="post-actions">
+        <img src="https://img.icons8.com/material-outlined/24/000000/like--v1.png">
+        <img src="https://img.icons8.com/material-outlined/24/000000/comments.png">
+        <img src="https://img.icons8.com/material-outlined/24/000000/forward-arrow.png">
+      </div>
+    </div>
+
+    <div id="searchResultContainer"></div>
+  </div>
+
+  <div class="right-sidebar">
+    <div>Suggestions</div>
+    <div>Contacts</div>
+  </div>
+</div>
+
+<footer>
+  <button class="footer-btn" onclick="stayHome()"><img src="https://img.icons8.com/material-outlined/24/000000/home--v2.png"></button>
+  <button class="footer-btn" onclick="goToNotifications()"><img src="https://img.icons8.com/material-outlined/24/000000/appointment-reminders--v1.png"></button>
+  <button class="footer-btn" onclick="goToMessages()"><img src="https://img.icons8.com/material-outlined/24/000000/sms.png"></button>
+  <button class="footer-btn" onclick="goToFriends()"><img src="https://img.icons8.com/material-outlined/24/000000/group.png"></button>
+  <button class="footer-btn" onclick="goToSettings()"><img src="https://img.icons8.com/material-outlined/24/000000/settings.png"></button>
+  <button class="footer-btn" onclick="goToMenu()"><img src="https://img.icons8.com/material-outlined/24/000000/menu.png"></button>
+</footer>
+
+<script>
+function stayHome(){ }
+function goToMessages(){ window.location.href="Untitled-6.html"; }
+function goToSettings(){ window.location.href="Untitled-7.html"; }
+function goToFriends(){ window.location.href="Untitled-8.html"; }
+function goToNotifications(){ window.location.href="Untitled-9.html"; }
+
+function goToMenu(){
+  const menu = document.getElementById('hamburgerMenu');
+  menu.style.display = (menu.style.display === "block") ? "none" : "block";
+}
+
+function goToYourActivity(){ window.location.href="Untitled-17.html"; }
+function goToReportProblem(){ window.location.href="Untitled-22.html"; }
+function switchAccount(){ window.location.href='Untitled-15.html'; }
+function logOut(){ window.location.href='Untitled-13.html'; }
+
+// SHOW USER INFO
+window.addEventListener('DOMContentLoaded', function(){
+  const username = localStorage.getItem('username') || '';
+  const profilePic = localStorage.getItem('profilePic') || 'https://via.placeholder.com/50';
+  
+  document.getElementById('userName').textContent = username;
+  document.getElementById('userAvatar').src = profilePic;
+});
+
+// LIVE SEARCH WITH PROFILE PICTURE
+function liveSearch() {
+  const query = document.getElementById('searchInput').value.trim();
+  const profilePic = document.getElementById('userAvatar').src || 'https://via.placeholder.com/50';
+  const container = document.getElementById('searchResultContainer');
+  if (!container) return;
+
+  if(query !== ""){
+    container.innerHTML = `
+      <div style="display:flex; align-items:center; gap:10px;">
+        <img src="${profilePic}" alt="Profile Pic" style="width:50px; height:50px; border-radius:50%; object-fit:cover;">
+        <div>
+          <strong>${query}</strong>
+          <p>User found below the search box.</p>
+        </div>
+      </div>
+    `;
+  } else {
+    container.innerHTML = "";
+  }
+}
+
+document.getElementById('searchInput').addEventListener('input', liveSearch);
+</script>
+
+</body>
+</html>

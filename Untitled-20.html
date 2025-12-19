@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Account History • Netless</title>
+
+<style>
+    body {
+        margin: 0;
+        font-family: Arial, sans-serif;
+        background-color: black;
+        color: #00ffff;
+    }
+
+    /* NEON BACK ICON */
+    .back-container {
+        position: absolute;
+        top: 20px;
+        left: 20px;
+        z-index: 100;
+    }
+
+    .back-icon {
+        width: 50px;
+        height: 50px;
+        background: linear-gradient(135deg, #00ffff, #ff00ff);
+        border-radius: 50%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        cursor: pointer;
+        box-shadow: 0 0 15px #00ffff, 0 0 25px #ff00ff;
+        transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    .back-icon:hover {
+        transform: scale(1.1);
+        box-shadow: 0 0 20px #00ffff, 0 0 35px #ff00ff;
+    }
+
+    .back-icon svg {
+        width: 24px;
+        height: 24px;
+        fill: black;
+    }
+
+    header {
+        position: sticky;
+        top: 0;
+        background-color: #111;
+        padding: 15px;
+        text-align: center;
+        border-bottom: 1px solid #333;
+        z-index: 50;
+    }
+
+    header h1 {
+        margin: 0;
+        font-size: 28px;
+        color: #00ffff;
+        text-shadow: 2px 2px 5px #ff00ff;
+    }
+
+    .history-section {
+        padding: 80px 20px 20px;
+        max-width: 600px;
+        margin: auto;
+    }
+
+    .history-card {
+        background-color: #111;
+        border: 1px solid #333;
+        border-radius: 10px;
+        padding: 15px;
+        margin-bottom: 15px;
+        transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    .history-card:hover {
+        transform: scale(1.02);
+        box-shadow: 0 0 15px #00ffff, 0 0 25px #ff00ff;
+    }
+
+    .history-card h2 {
+        margin: 0 0 10px;
+        font-size: 20px;
+        color: #00ffff;
+    }
+
+    .history-item {
+        display: flex;
+        justify-content: space-between;
+        font-size: 14px;
+        color: #aaa;
+        margin-bottom: 8px;
+    }
+
+    .history-item span {
+        color: #00ffff;
+    }
+
+    .status-safe {
+        color: #00ff88;
+    }
+
+    .status-alert {
+        color: #ff5555;
+    }
+</style>
+</head>
+
+<body>
+
+<!-- Back Icon → Untitled-17 -->
+<div class="back-container">
+  <div class="back-icon" onclick="window.location.href='Untitled-17.html'" title="Go Back">
+    <svg viewBox="0 0 24 24">
+      <path d="M15.41 7.41 14 6l-6 6 6 6 1.41-1.41L10.83 12z"/>
+    </svg>
+  </div>
+</div>
+
+<header>
+    <h1>Account History</h1>
+</header>
+
+<div class="history-section">
+
+    <div class="history-card">
+        <h2>Security Changes</h2>
+        <div class="history-item">Password changed <span>1 week ago</span></div>
+        <div class="history-item">2FA enabled <span class="status-safe">Active</span></div>
+        <div class="history-item">Recovery email updated <span>2 months ago</span></div>
+    </div>
+
+    <div class="history-card">
+        <h2>Login Activity</h2>
+        <div class="history-item">New device login <span class="status-alert">3 days ago</span></div>
+        <div class="history-item">Location change <span>Kigali, RW</span></div>
+        <div class="history-item">Last login <span>Today, 10:42</span></div>
+    </div>
+
+    <div class="history-card">
+        <h2>Account Updates</h2>
+        <div class="history-item">Username updated <span>6 months ago</span></div>
+        <div class="history-item">Email verified <span>Yes</span></div>
+        <div class="history-item">Phone number added <span>Yes</span></div>
+    </div>
+
+    <div class="history-card">
+        <h2>Privacy & Sessions</h2>
+        <div class="history-item">Active sessions <span>2</span></div>
+        <div class="history-item">Devices logged out <span>1</span></div>
+        <div class="history-item">Blocked users <span>4</span></div>
+    </div>
+
+</div>
+
+</body>
+</html>

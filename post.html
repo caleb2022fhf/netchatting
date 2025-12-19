@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Welcome Page</title>
+<style>
+    body {
+        margin: 0;
+        background-color: black;
+        color: #00ffff;
+        font-family: Arial, sans-serif;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding: 80px 20px 20px 20px;
+        position: relative;
+        min-height: 100vh;
+        text-align: center;
+    }
+
+    .back-container {
+        position: absolute;
+        top: 20px;
+        left: 20px;
+        z-index: 100;
+    }
+
+    .back-icon {
+        width: 50px;
+        height: 50px;
+        background: linear-gradient(135deg, #00ffff, #ff00ff);
+        border-radius: 50%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        cursor: pointer;
+        box-shadow: 0 0 15px #00ffff, 0 0 25px #ff00ff;
+        transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    .back-icon:hover {
+        transform: scale(1.1);
+        box-shadow: 0 0 20px #00ffff, 0 0 35px #ff00ff;
+    }
+
+    .back-icon svg {
+        width: 24px;
+        height: 24px;
+        fill: black;
+    }
+
+    h1 {
+        margin-bottom: 15px;
+        color: #00ffff;
+    }
+
+    .paragraphs p {
+        margin: 8px 0;
+        line-height: 1.5;
+        max-width: 600px;
+    }
+
+    #photoInput { display: none; }
+    #uploadBtn {
+        padding: 10px 20px;
+        background-color: #00ffff;
+        color: black;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 16px;
+        border: none;
+        margin-top: 15px;
+    }
+    #uploadBtn:hover { background-color: #ff00ff; color: white; }
+
+    #preview {
+        display: none;
+        flex-direction: column;
+        align-items: center;
+        margin-top: 10px;
+    }
+
+    .photo-container {
+        position: relative;
+        width: 200px;
+        height: 200px;
+    }
+
+    #uploadedPhoto {
+        width: 100%;
+        height: 100%;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 3px solid #00ffff;
+        background-color: #222;
+    }
+
+    #addIcon {
+        position: absolute;
+        bottom: 0;
+        right: 0;
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        background-color: #00ffff;
+        color: black;
+        font-size: 30px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        border: 2px solid white;
+        cursor: pointer;
+    }
+
+    #addIcon:hover {
+        background-color: #ff00ff;
+        color: white;
+    }
+
+    .password-container {
+        position: relative;
+        margin-top: 15px;
+    }
+
+    input[type="password"], input[type="text"] {
+        padding: 12px;
+        border-radius: 6px;
+        border: none;
+        font-size: 14px;
+        width: 300px;
+        background-color: #222;
+        color: white;
+    }
+
+    .eye-icon {
+        position: absolute;
+        top: 50%;
+        right: 10px;
+        transform: translateY(-50%);
+        cursor: pointer;
+        font-size: 18px;
+        color: #00ffff;
+    }
+
+    .eye-icon:hover { color: #ff00ff; }
+
+    button#continueBtn {
+        margin-top: 15px;
+        padding: 12px 20px;
+        background-color: #00ffff;
+        color: black;
+        border-radius: 5px;
+        border: none;
+        cursor: pointer;
+        font-size: 16px;
+    }
+
+    button#continueBtn:hover {
+        background-color: #ff00ff;
+        color: white;
+    }
+
+    .message { margin-top: 10px; font-size: 14px; }
+    .success { color: #00ff88; }
+    .error { color: red; }
+
+</style>
+</head>
+<body>
+
+<div class="back-container">
+  <div class="back-icon" onclick="window.location.href='createaccount.html'" title="Go Back">
+    <svg viewBox="0 0 24 24">
+      <path d="M15.41 7.41 14 6l-6 6 6 6 1.41-1.41L10.83 12z"/>
+    </svg>
+  </div>
+</div>
+
+<h1>Welcome!</h1>
+
+<div class="paragraphs">
+    <p>Welcome to our platform, where your journey begins.</p>
+    <p>Here you can explore exciting features and interact with friends.</p>
+    <p>Upload your favorite photos and share your moments.</p>
+    <p>Stay connected with your community in a safe environment.</p>
+    <p>Customize your profile to make it truly yours.</p>
+    <p>Enjoy exclusive content and personalized recommendations.</p>
+    <p>Learn, share, and grow with others around the globe.</p>
+    <p>Participate in challenges and events to unlock achievements.</p>
+    <p>Keep your account secure with a strong password.</p>
+    <p>Thank you for joining us — let’s make this journey memorable!</p>
+</div>
+
+<input type="file" id="photoInput" accept="image/*">
+<button id="uploadBtn">Upload Photo</button>
+
+<div id="preview">
+    <div class="photo-container">
+        <img id="uploadedPhoto" src="" alt="Your Photo">
+        <div id="addIcon">+</div>
+    </div>
+</div>
+
+<div class="password-container">
+    <input type="password" id="password" placeholder="Enter password to continue">
+    <span class="eye-icon" id="toggleEye">&#128065;</span>
+</div>
+<button id="continueBtn">Continue</button>
+<div class="message" id="message"></div>
+
+<script>
+const photoInput = document.getElementById('photoInput');
+const uploadBtn = document.getElementById('uploadBtn');
+const preview = document.getElementById('preview');
+const uploadedPhoto = document.getElementById('uploadedPhoto');
+const addIcon = document.getElementById('addIcon');
+const continueBtn = document.getElementById('continueBtn');
+const passwordInput = document.getElementById('password');
+const message = document.getElementById('message');
+const toggleEye = document.getElementById('toggleEye');
+
+uploadBtn.addEventListener('click', () => photoInput.click());
+
+photoInput.addEventListener('change', () => {
+    const file = photoInput.files[0];
+    if(file){
+        const reader = new FileReader();
+        reader.onload = e => {
+            uploadedPhoto.src = e.target.result;
+            preview.style.display = 'flex';
+            uploadBtn.style.display = 'none';
+        };
+        reader.readAsDataURL(file);
+    }
+});
+
+addIcon.addEventListener('click', () => photoInput.click());
+
+// Toggle password visibility
+toggleEye.addEventListener('click', () => {
+    if(passwordInput.type === "password") {
+        passwordInput.type = "text";
+        toggleEye.style.color = "#ff00ff";
+    } else {
+        passwordInput.type = "password";
+        toggleEye.style.color = "#00ffff";
+    }
+});
+
+continueBtn.addEventListener('click', () => {
+    if(passwordInput.value === "202526") {
+        message.textContent = "✅ Password correct! You can continue.";
+        message.className = "message success";
+        window.location.href = "home.html";
+    } else {
+        message.textContent = "❌ Incorrect password!";
+        message.className = "message error";
+    }
+});
+</script>
+
+</body>
+</html>

@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>About • Netless</title>
+<style>
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: black;
+  color: white;
+}
+
+.header {
+  padding: 20px;
+  border-bottom: 1px solid #333;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.header h1 {
+  color: #00ffff;
+  margin: 0;
+  font-size: 24px;
+  flex: 1;
+}
+
+.back-btn {
+  padding: 8px 12px;
+  background: #00ffff;
+  color: black;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.back-btn:hover {
+  background: #ff00ff;
+  color: white;
+}
+
+.container {
+  padding: 20px;
+}
+
+.user-info {
+  background: #111;
+  padding: 15px;
+  border-radius: 8px;
+  border: 1px solid #333;
+}
+
+.user-info h3 {
+  color: #00ffff;
+  margin-bottom: 10px;
+}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <button class="back-btn" onclick="window.history.back()">← Back</button>
+  <h1>About</h1>
+</div>
+
+<div class="container">
+  <div class="user-info">
+    <h3>Bio</h3>
+    <p id="userBio">This is your bio...</p>
+  </div>
+
+  <div class="user-info">
+    <h3>Other Info</h3>
+    <p>Here you can show more details about the user.</p>
+  </div>
+</div>
+
+<script>
+// Load username and bio from localStorage
+const username = localStorage.getItem('username') || 'Username';
+document.title = `About • ${username}`;
+const bio = localStorage.getItem('userBio') || 'This is your bio...';
+document.getElementById('userBio').textContent = bio;
+</script>
+
+</body>
+</html>

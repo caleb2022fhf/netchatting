@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Language Preferences</title>
+<style>
+    body {
+        background-color: #000000; /* pure black */
+        color: #ffffff;
+        font-family: Arial, sans-serif;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding: 20px;
+    }
+
+    /* NEON BACK ICON */
+    .back-container {
+        align-self: flex-start;
+        margin-bottom: 15px;
+    }
+
+    .back-icon {
+        width: 50px;
+        height: 50px;
+        background: linear-gradient(135deg, #00ffff, #ff00ff);
+        border-radius: 50%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        cursor: pointer;
+        box-shadow: 0 0 15px #00ffff, 0 0 25px #ff00ff;
+        transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    .back-icon:hover {
+        transform: scale(1.1);
+        box-shadow: 0 0 20px #00ffff, 0 0 35px #ff00ff;
+    }
+
+    .back-icon svg {
+        width: 24px;
+        height: 24px;
+        fill: black;
+    }
+
+    header {
+        font-size: 24px;
+        font-weight: bold;
+        margin-bottom: 20px;
+        width: 100%;
+        text-align: center;
+        color: #00ffff; /* neon cyan for accent like IG/Facebook */
+    }
+
+    input[type="text"] {
+        width: 100%;
+        max-width: 400px;
+        padding: 10px;
+        margin-bottom: 20px;
+        border-radius: 8px;
+        border: 1px solid #333;
+        background-color: #1a1a1a;
+        color: #ffffff;
+        font-size: 16px;
+        outline: none;
+    }
+
+    input[type="text"]::placeholder {
+        color: #888888;
+    }
+
+    .language-list {
+        width: 100%;
+        max-width: 400px;
+        border-radius: 10px;
+        background-color: #111111;
+        overflow: hidden;
+        box-shadow: 0 0 10px rgba(0,255,255,0.2);
+    }
+
+    .language-item {
+        padding: 15px 20px;
+        border-bottom: 1px solid #222;
+        cursor: pointer;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        transition: background 0.2s;
+    }
+
+    .language-item:hover {
+        background-color: #222222;
+    }
+
+    .selected {
+        font-weight: bold;
+        color: #00ffff;
+    }
+
+    .checkmark {
+        color: #00ffff;
+        font-weight: bold;
+    }
+</style>
+</head>
+<body>
+
+<!-- Back icon inside a div -->
+<div class="back-container">
+    <div class="back-icon" onclick="history.back()" title="Go Back">
+        <svg viewBox="0 0 24 24">
+            <path d="M15.41 7.41 14 6l-6 6 6 6 1.41-1.41L10.83 12z"/>
+        </svg>
+    </div>
+</div>
+
+<header>Language Preferences</header>
+
+<input type="text" placeholder="Search languages...">
+
+<div class="language-list">
+    <div class="language-item selected">
+        English <span class="checkmark">&#10003;</span>
+    </div>
+    <div class="language-item">Spanish</div>
+    <div class="language-item">French</div>
+    <div class="language-item">German</div>
+    <div class="language-item">Chinese</div>
+    <div class="language-item">Japanese</div>
+    <div class="language-item">Kinyarwanda</div>
+</div>
+
+</body>
+</html>

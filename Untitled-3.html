@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Registration Page</title>
+    <style>
+        body {
+            background: black;
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        h1 {
+            color: #00ffff;
+            font-size: 48px;
+            font-weight: bold;
+            text-shadow: 2px 2px 5px #ff00ff;
+            margin-bottom: 10px;
+            letter-spacing: 3px;
+            text-align: center;
+        }
+
+        .instructions {
+            color: #00ffff;
+            text-align: center;
+            margin-bottom: 20px;
+            max-width: 400px;
+            line-height: 1.5;
+        }
+
+        .form-box {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            width: 350px;
+            box-shadow: 0 0 10px rgba(255,255,255,0.2);
+            text-align: center;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+
+        input {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 15px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+        }
+
+        button.register-btn {
+            width: 100%;
+            padding: 10px;
+            background: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        button.register-btn:hover {
+            background: #0056b3;
+        }
+
+        .already-registered {
+            margin-top: 15px;
+            color: #007bff;
+            text-decoration: underline;
+            cursor: pointer;
+            display: block;
+        }
+    </style>
+</head>
+<body>
+
+<h1>Register</h1>
+
+<div class="instructions">
+    <p>Email must be valid.</p>
+    <p>Username can only contain letters and underscores.</p>
+    <p>You must be 18 years old or older.</p>
+    <p>Password must be 4 to 10 characters long.</p>
+</div>
+
+<div class="form-box">
+    <form id="registrationForm">
+        <label>Email:</label>
+        <input type="email" id="email" required>
+
+        <label>Username:</label>
+        <input type="text" id="username" required>
+
+        <label>Second Name:</label>
+        <input type="text" id="secondName" required>
+
+        <label>Date of Birth:</label>
+        <input type="date" id="dob" required>
+
+        <label>Password:</label>
+        <input type="password" id="password" required>
+
+        <label>Confirm Password:</label>
+        <input type="password" id="confirmPassword" required>
+
+        <button type="submit" class="register-btn">Register</button>
+    </form>
+
+    <span class="already-registered" onclick="window.location.href='Untitled-2.html'">
+        I have Registered
+    </span>
+</div>
+
+<script>
+    // 🔥 DELETE ALL PREVIOUS USERS (RESET EMAILS)
+    localStorage.removeItem('users');
+
+    const form = document.getElementById('registrationForm');
+
+    form.addEventListener('submit', function(e) {
+        e.preventDefault();
+
+        const email = document.getElementById('email').value;
+        const username = document.getElementById('username').value;
+        const secondName = document.getElementById('secondName').value;
+        const dob = document.getElementById('dob').value;
+        const password = document.getElementById('password').value;
+        const confirmPassword = document.getElementById('confirmPassword').value;
+
+        // Username validation
+        if (!/^[A-Za-z_]+$/.test(username)) {
+            alert("Username can only contain letters and underscores.");
+            return;
+        }
+
+        // Age validation
+        const birthDate = new Date(dob);
+        const today = new Date();
+        let age = today.getFullYear() - birthDate.getFullYear();
+        if (
+            today.getMonth() < birthDate.getMonth() ||
+            (today.getMonth() === birthDate.getMonth() && today.getDate() < birthDate.getDate())
+        ) {
+            age--;
+        }
+        if (age < 18) {
+            alert("You must be at least 18 years old.");
+            return;
+        }
+
+        // Password length
+        if (password.length < 4 || password.length > 10) {
+            alert("Password must be 4 to 10 characters long.");
+            return;
+        }
+
+        // Password match
+        if (password !== confirmPassword) {
+            alert("Passwords do not match!");
+            return;
+        }
+
+        // Emails that skip verification
+        const skipVerificationEmails = [
+            "nishimwepaulette@gmail.com",
+            "ishimwezigaabel@gmail.com",
+            "ishimwejeanpaul4@gmail.com",
+            "ilisacolombe@gmail.com",
+            "ingabirefrancine2008@gmail.com",
+            "cedro@gmail.com"
+        ];
+
+        if (!skipVerificationEmails.includes(email)) {
+            const verificationCode = Math.floor(100000 + Math.random() * 900000);
+            const userInput = prompt(
+                `Verification code sent to ${email}\nEnter the 6-digit code:`
+            );
+
+            if (userInput != verificationCode) {
+                alert("Incorrect verification code.");
+                return;
+            }
+        }
+
+        // Save only the new user
+        const users = [{ email, username, secondName, dob, password }];
+        localStorage.setItem('users', JSON.stringify(users));
+
+        // Redirect
+        window.location.href = 'Untitled-14.html';
+    });
+</script>
+
+</body>
+</html>

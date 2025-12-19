@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Settings Wallpaper</title>
+<style>
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: 'Segoe UI', Arial, sans-serif;
+    background: black; /* Fully black background */
+    color: white;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    position: relative;
+  }
+
+  /* NEON BACK ICON */
+  .back-container {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+  }
+
+  .back-icon {
+    width: 50px;
+    height: 50px;
+    background: linear-gradient(135deg, #00ffff, #ff00ff);
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    box-shadow: 0 0 15px #00ffff, 0 0 25px #ff00ff;
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+
+  .back-icon:hover {
+    transform: scale(1.1);
+    box-shadow: 0 0 20px #00ffff, 0 0 35px #ff00ff;
+  }
+
+  .back-icon svg {
+    width: 24px;
+    height: 24px;
+    fill: black;
+  }
+
+  .settings-app {
+    width: 90%;
+    max-width: 900px;
+    background: rgba(255,255,255,0.05);
+    backdrop-filter: blur(20px);
+    border-radius: 20px;
+    padding: 30px;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.6);
+  }
+
+  .header {
+    font-size: 28px;
+    font-weight: bold;
+    margin-bottom: 20px;
+    letter-spacing: 1px;
+  }
+
+  .section {
+    margin-bottom: 30px;
+  }
+
+  .section h3 {
+    font-size: 18px;
+    margin-bottom: 10px;
+    color: #ffdd57;
+  }
+
+  .option {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: rgba(255,255,255,0.08);
+    padding: 12px 20px;
+    border-radius: 16px;
+    margin-bottom: 12px;
+    cursor: default;
+    transition: background 0.3s;
+  }
+
+  .option:hover {
+    background: rgba(255,255,255,0.15);
+  }
+
+  .option input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+  }
+
+  .clickable {
+    cursor: pointer;
+  }
+
+  .profile {
+    display: flex;
+    align-items: center;
+    margin-bottom: 25px;
+  }
+
+  .profile .avatar {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #ff416c, #ff4b2b);
+    margin-right: 20px;
+  }
+
+  .profile .name {
+    font-size: 20px;
+    font-weight: 500;
+  }
+
+</style>
+</head>
+<body>
+
+<!-- Neon back icon -->
+<div class="back-container">
+  <div class="back-icon" onclick="history.back()" title="Go Back">
+    <svg viewBox="0 0 24 24">
+      <path d="M15.41 7.41 14 6l-6 6 6 6 1.41-1.41L10.83 12z"/>
+    </svg>
+  </div>
+</div>
+
+<div class="settings-app">
+  <div class="profile">
+    <div class="avatar"></div>
+    <div class="name">Aime Caleb</div>
+  </div>
+
+  <div class="section">
+    <h3>Account Settings</h3>
+    <div class="option clickable" onclick="window.location.href='Untitled-10.html'">Change Password</div>
+    <div class="option clickable" onclick="window.location.href='Untitled-11.html'">Privacy Settings</div>
+    <div class="option clickable" onclick="window.location.href='Untitled-12.html'">Language Preferences</div>
+  </div>
+
+  <div class="section">
+    <h3>Notifications</h3>
+    <div class="option">Email Notifications <input type="checkbox" checked></div>
+    <div class="option">Push Notifications <input type="checkbox"></div>
+    <div class="option">Message Alerts <input type="checkbox" checked></div>
+  </div>
+
+  <div class="section">
+    <h3>Display</h3>
+    <div class="option">Dark Mode <input type="checkbox" checked></div>
+    <div class="option">Font Size: Medium</div>
+    <div class="option">Theme Color: Blue</div>
+  </div>
+</div>
+
+</body>
+</html>

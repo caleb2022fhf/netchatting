@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Email Verification</title>
+
+<style>
+    body {
+        margin: 0;
+        height: 100vh;
+        background: black;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-family: Arial, sans-serif;
+        color: white;
+        position: relative;
+    }
+
+    .container {
+        width: 320px;
+        text-align: center;
+    }
+
+    h2 {
+        color: #00ffff;
+        margin-bottom: 20px;
+    }
+
+    button {
+        width: 100%;
+        padding: 12px;
+        background: #00ffff;
+        border: none;
+        border-radius: 6px;
+        font-size: 16px;
+        cursor: pointer;
+        font-weight: bold;
+        margin-bottom: 15px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+    }
+
+    button:hover {
+        opacity: 0.8;
+    }
+
+    input {
+        width: 100%;
+        padding: 12px;
+        border-radius: 6px;
+        border: none;
+        outline: none;
+        font-size: 15px;
+        margin-bottom: 15px;
+    }
+
+    .message {
+        margin-top: 15px;
+        font-size: 14px;
+    }
+
+    .error {
+        color: red;
+    }
+
+    .success {
+        color: #00ff88;
+    }
+
+    /* NEON BACK ICON */
+    .back-container {
+        position: absolute;
+        top: 20px;
+        left: 20px;
+        z-index: 100;
+    }
+
+    .back-icon {
+        width: 50px;
+        height: 50px;
+        background: linear-gradient(135deg, #00ffff, #ff00ff);
+        border-radius: 50%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        cursor: pointer;
+        box-shadow: 0 0 15px #00ffff, 0 0 25px #ff00ff;
+        transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    .back-icon:hover {
+        transform: scale(1.1);
+        box-shadow: 0 0 20px #00ffff, 0 0 35px #ff00ff;
+    }
+
+    .back-icon svg {
+        width: 24px;
+        height: 24px;
+        fill: black;
+    }
+</style>
+</head>
+
+<body>
+
+<!-- Neon back icon -->
+<div class="back-container">
+  <div class="back-icon" onclick="window.location.href='Untitled-2.html'" title="Go Back">
+    <svg viewBox="0 0 24 24">
+      <path d="M15.41 7.41 14 6l-6 6 6 6 1.41-1.41L10.83 12z"/>
+    </svg>
+  </div>
+</div>
+
+<div class="container">
+    <button onclick="createAccount()">
+        👤 Create Account
+    </button>
+
+    <h2>Verify Your Email</h2>
+
+    <input type="email" id="email" placeholder="Enter your email" required>
+
+    <button onclick="verifyEmail()">Continue</button>
+
+    <div class="message" id="message"></div>
+</div>
+
+<script>
+function createAccount() {
+    // Go to page called "createaccount"
+    window.location.href = "createaccount.html";
+}
+
+function verifyEmail() {
+    const emailInput = document.getElementById("email").value.trim();
+    const message = document.getElementById("message");
+
+    if (emailInput === "") {
+        message.textContent = "Please enter an email";
+        message.className = "message error";
+        return;
+    }
+
+    // Retrieve registered accounts
+    let accounts = JSON.parse(localStorage.getItem("accounts")) || [];
+
+    // Check if email is already registered
+    const accountExists = accounts.find(acc => acc.email === emailInput);
+
+    if (accountExists) {
+        message.textContent = "✅ Email found. Redirecting to login...";
+        message.className = "message success";
+
+        // Redirect to login page after short delay
+        setTimeout(() => {
+            window.location.href = "login.html";
+        }, 1000);
+    } else {
+        message.textContent = "❌ This email is not registered. Please create an account first.";
+        message.className = "message error";
+    }
+}
+</script>
+
+</body>
+</html>

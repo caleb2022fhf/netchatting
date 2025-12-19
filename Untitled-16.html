@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Forgot Account • Netless</title>
+<style>
+    body {
+        margin: 0;
+        font-family: Arial, sans-serif;
+        background: black;
+        color: #00ffff;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        height: 100vh;
+    }
+
+    h1 {
+        font-size: 48px;
+        text-shadow: 2px 2px 5px #ff00ff;
+        margin-bottom: 20px;
+        text-align: center;
+    }
+
+    .instructions {
+        text-align: center;
+        margin-bottom: 20px;
+        max-width: 400px;
+        line-height: 1.5;
+    }
+
+    .form-box {
+        background: #111;
+        padding: 30px;
+        border-radius: 10px;
+        width: 350px;
+        box-shadow: 0 0 20px rgba(0,255,255,0.2);
+        text-align: center;
+    }
+
+    input {
+        width: 100%;
+        padding: 10px;
+        margin-bottom: 15px;
+        border-radius: 5px;
+        border: 1px solid #333;
+        background: black;
+        color: #00ffff;
+    }
+
+    input::placeholder {
+        color: #555;
+    }
+
+    button {
+        width: 100%;
+        padding: 12px;
+        border: none;
+        border-radius: 5px;
+        background: #00ffff;
+        color: black;
+        font-size: 16px;
+        font-weight: bold;
+        cursor: pointer;
+        transition: background 0.3s;
+    }
+
+    button:hover {
+        background: #00cccc;
+    }
+
+    .back-link {
+        margin-top: 15px;
+        color: #00ffff;
+        text-decoration: underline;
+        cursor: pointer;
+        display: inline-block;
+    }
+
+    .back-link:hover {
+        color: #ff00ff;
+    }
+</style>
+</head>
+<body>
+
+<h1>Forgot Account?</h1>
+<div class="instructions">
+    Enter your email associated with your account, and we'll help you recover it.
+</div>
+
+<div class="form-box">
+    <form id="forgotForm">
+        <input type="email" id="emailInput" placeholder="Enter your email" required>
+        <button type="submit">Send Verification Code</button>
+    </form>
+    <span class="back-link" onclick="goBack()">Back to Login</span>
+</div>
+
+<script>
+    const form = document.getElementById('forgotForm');
+
+    form.addEventListener('submit', function(e) {
+        e.preventDefault();
+        const emailInput = document.getElementById('emailInput').value.trim();
+
+        if(emailInput === ""){
+            alert("Please enter your email.");
+            return;
+        }
+
+        // Check if email exists in saved users
+        let savedUsers = JSON.parse(localStorage.getItem('users')) || [];
+        let userFound = savedUsers.find(user => user.email === emailInput);
+
+        if(userFound){
+            // Simulate sending verification code
+            const code = Math.floor(100000 + Math.random() * 900000);
+            const userCode = prompt(`A verification code has been sent to ${emailInput}.\nEnter the 6-digit code:`);
+
+            if(userCode != code){
+                alert("Incorrect verification code. Please try again.");
+                return;
+            } else {
+                alert("Verification successful! You can now reset your password.");
+                // Redirect to password reset page
+                window.location.href = "reset-password.html";
+            }
+        } else {
+            alert("No account found with this email.");
+        }
+    });
+
+    function goBack() {
+        window.location.href = "Untitled-2.html"; // login page
+    }
+</script>
+
+</body>
+</html>

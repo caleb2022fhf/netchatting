@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Notifications • Netless</title>
+
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  background: black;
+  color: white;
+  font-family: Arial, sans-serif;
+  position: relative;
+}
+
+/* NEON BACK ICON */
+.back-container {
+  padding: 15px;
+}
+
+.back-icon {
+  width: 50px;
+  height: 50px;
+  background: linear-gradient(135deg, #00ffff, #ff00ff);
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  box-shadow: 0 0 15px #00ffff, 0 0 25px #ff00ff;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+.back-icon:hover {
+  transform: scale(1.1);
+  box-shadow: 0 0 20px #00ffff, 0 0 35px #ff00ff;
+}
+.back-icon svg {
+  width: 24px;
+  height: 24px;
+  fill: black;
+}
+
+/* HEADER */
+header {
+  background: #111;
+  padding: 15px;
+  text-align: center;
+  border-bottom: 1px solid #333;
+  position: sticky;
+  top: 0;
+  z-index: 1;
+}
+
+header h1 {
+  color: #00ffff;
+  font-size: 28px;
+  letter-spacing: 2px;
+}
+
+/* NOTIFICATION LIST */
+.container {
+  max-width: 600px;
+  margin: auto;
+  padding: 10px;
+}
+
+.notification {
+  display: flex;
+  gap: 12px;
+  padding: 12px;
+  border-bottom: 1px solid #222;
+  transition: background 0.2s;
+}
+
+.notification:hover {
+  background: #111;
+}
+
+.avatar {
+  width: 45px;
+  height: 45px;
+  border-radius: 50%;
+  background: gray;
+  flex-shrink: 0;
+}
+
+.content {
+  flex: 1;
+}
+
+.content p {
+  font-size: 14px;
+  line-height: 1.4;
+}
+
+.content span {
+  color: #aaa;
+  font-size: 12px;
+}
+
+.action {
+  color: #00ffff;
+  font-weight: bold;
+}
+
+/* UNREAD */
+.notification.unread {
+  background: rgba(0, 255, 255, 0.08);
+}
+</style>
+</head>
+
+<body>
+
+<!-- Back icon inside a div -->
+<div class="back-container">
+  <div class="back-icon" onclick="history.back()" title="Go Back">
+    <svg viewBox="0 0 24 24">
+      <path d="M15.41 7.41 14 6l-6 6 6 6 1.41-1.41L10.83 12z"/>
+    </svg>
+  </div>
+</div>
+
+<header>
+  <h1>Notifications</h1>
+</header>
+
+<div class="container">
+
+  <!-- LIKE -->
+  <div class="notification unread">
+    <div class="avatar"></div>
+    <div class="content">
+      <p><span class="action">User1</span> liked your post</p>
+      <span>2 minutes ago</span>
+    </div>
+  </div>
+
+  <!-- COMMENT -->
+  <div class="notification unread">
+    <div class="avatar"></div>
+    <div class="content">
+      <p><span class="action">User2</span> commented: “Nice post 🔥”</p>
+      <span>10 minutes ago</span>
+    </div>
+  </div>
+
+  <!-- FOLLOW -->
+  <div class="notification">
+    <div class="avatar"></div>
+    <div class="content">
+      <p><span class="action">User3</span> started following you</p>
+      <span>1 hour ago</span>
+    </div>
+  </div>
+
+  <!-- STORY -->
+  <div class="notification">
+    <div class="avatar"></div>
+    <div class="content">
+      <p><span class="action">User4</span> mentioned you in a story</p>
+      <span>3 hours ago</span>
+    </div>
+  </div>
+
+  <!-- FRIEND REQUEST -->
+  <div class="notification">
+    <div class="avatar"></div>
+    <div class="content">
+      <p><span class="action">User5</span> sent you a friend request</p>
+      <span>Yesterday</span>
+    </div>
+  </div>
+
+</div>
+
+</body>
+</html>
