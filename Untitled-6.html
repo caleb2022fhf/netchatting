@@ -15,7 +15,7 @@ body { margin:0; font-family:Arial, sans-serif; background:black; color:white; d
 .avatar { width:40px; height:40px; border-radius:50%; background:#555; margin-right:10px; position:relative; }
 .online-indicator { width:10px; height:10px; border-radius:50%; position:absolute; top:15px; right:10px; border:1px solid white; }
 
-.chat-window { flex:1; display:flex; flex-direction:column; background:#000; }
+.chat-window { flex:1; display:flex; flex-direction:column; background:#000; position:relative; }
 .chat-header { padding:10px; background:#111; border-bottom:1px solid #222; font-weight:bold; display:flex; align-items:center; gap:10px; }
 .back-icon { width:40px; height:40px; border-radius:50%; background: linear-gradient(135deg,#00ffff,#ff00ff); display:flex; justify-content:center; align-items:center; cursor:pointer; }
 .back-icon svg { width:20px; height:20px; fill:black; }
@@ -33,6 +33,28 @@ body { margin:0; font-family:Arial, sans-serif; background:black; color:white; d
 .icons { display:flex; align-items:center; gap:10px; margin-left:auto; }
 .icon-btn { width:35px; height:35px; border-radius:50%; background:#222; display:flex; justify-content:center; align-items:center; cursor:pointer; }
 .icon-btn:hover { background:#444; }
+
+#stickerPanel { display:none; position:absolute; bottom:70px; right:20px; background:#222; padding:10px; border-radius:10px; display:flex; gap:10px; flex-wrap:wrap; z-index:100; }
+#stickerPanel img { width:40px; cursor:pointer; }
+
+#pinModal {
+  display:none;
+  position:fixed;
+  top:0; left:0; width:100%; height:100%;
+  background: rgba(0,0,0,0.8);
+  justify-content:center;
+  align-items:center;
+  z-index:1000;
+}
+#pinModal .modal-content {
+  background:#111;
+  padding:20px;
+  border-radius:10px;
+  display:flex; flex-direction:column; gap:10px;
+  width:300px;
+}
+#pinModal input { padding:10px; border-radius:10px; border:none; background:#222; color:white; }
+#pinModal button { padding:10px; border-radius:10px; border:none; background:#00ffff; cursor:pointer; color:black; }
 </style>
 </head>
 <body>
@@ -49,6 +71,14 @@ body { margin:0; font-family:Arial, sans-serif; background:black; color:white; d
     </div>
     <div class="avatar"></div>
     <div id="chatName">Select User</div>
+    <div class="icons">
+      <div class="icon-btn" onclick="startVideoCall()">📹</div>
+      <div class="icon-btn" onclick="openPinModal()">S</div>
+      <div class="icon-btn" onclick="startAudioCall()">🎧</div>
+      <label class="icon-btn" for="imageInput">📷</label>
+      <input type="file" id="imageInput" accept="image/*" hidden>
+      <div class="icon-btn" onclick="toggleStickers()">😊</div>
+    </div>
   </div>
   <div class="chat-messages" id="chatMessages"></div>
   <div class="chat-input">
@@ -57,16 +87,31 @@ body { margin:0; font-family:Arial, sans-serif; background:black; color:white; d
   </div>
 </div>
 
+<div id="stickerPanel">
+  <img src="https://twemoji.maxcdn.com/v/latest/72x72/1f600.png">
+  <img src="https://twemoji.maxcdn.com/v/latest/72x72/1f602.png">
+  <img src="https://twemoji.maxcdn.com/v/latest/72x72/1f609.png">
+</div>
+
+<!-- PIN MODAL -->
+<div id="pinModal">
+  <div class="modal-content">
+    <label>Enter PIN:</label>
+    <input type="password" id="pinInput">
+    <button onclick="checkPin()">Submit</button>
+    <button onclick="closePinModal()">Cancel</button>
+  </div>
+</div>
+
 <script>
 // CURRENT USER
 const currentUser = localStorage.getItem('currentUsername') || prompt("Enter your username:");
 localStorage.setItem('currentUsername', currentUser);
 
-// USERS LIST (example)
+// USERS LIST
 let usersFromUntitled8 = JSON.parse(localStorage.getItem('usersFromUntitled8')) || ["User1","User2","User3"];
-usersFromUntitled8 = usersFromUntitled8.filter(u => u!==currentUser); // remove self
+usersFromUntitled8 = usersFromUntitled8.filter(u => u!==currentUser);
 const usersList = document.getElementById('usersList');
-
 let activeUser = null;
 
 function renderUsers(){
@@ -108,7 +153,15 @@ function renderMessages(){
   msgs.forEach(msg=>{
     const div = document.createElement('div');
     div.className = msg.sentBy===currentUser ? 'message sent' : 'message received';
-    div.textContent = msg.text;
+    if(msg.img){ 
+      const img=document.createElement('img');
+      img.src=msg.img;
+      img.style.maxWidth='200px';
+      img.style.borderRadius='10px';
+      div.appendChild(img);
+    } else {
+      div.textContent=msg.text;
+    }
     const timeSpan = document.createElement('span');
     timeSpan.className='time';
     timeSpan.textContent = msg.time || new Date().toLocaleTimeString();
@@ -119,24 +172,59 @@ function renderMessages(){
 }
 
 // SEND MESSAGE
-function addMessage(text){
-  if(!activeUser || !text) return;
+function addMessage(text, img=false){
+  if(!activeUser) return;
   const key = getChatKey(currentUser, activeUser);
   const msgs = JSON.parse(localStorage.getItem(key)) || [];
-  const msg = { sentBy: currentUser, text: text, time: new Date().toLocaleTimeString() };
+  const msg = { sentBy: currentUser, text:text||'', img:img||null, time:new Date().toLocaleTimeString() };
   msgs.push(msg);
   localStorage.setItem(key, JSON.stringify(msgs));
   renderMessages();
 }
 
+// SEND BUTTON
 sendBtn.onclick=()=>{ 
   addMessage(chatInput.value);
   chatInput.value='';
 }
 
+// IMAGE SEND
+document.getElementById('imageInput').onchange=()=>{
+  const file=document.getElementById('imageInput').files[0];
+  if(!file || !activeUser) return;
+  const reader=new FileReader();
+  reader.onload=()=>{ addMessage(null, reader.result); }
+  reader.readAsDataURL(file);
+}
+
+// STICKERS
+const stickerPanel = document.getElementById('stickerPanel');
+const stickers = stickerPanel.querySelectorAll('img');
+function toggleStickers(){ stickerPanel.style.display=stickerPanel.style.display==='flex'?'none':'flex'; }
+stickers.forEach(s=>{ s.onclick=()=>{ addMessage(null,s.src); stickerPanel.style.display='none'; } });
+
+// VIDEO / AUDIO
+function startVideoCall(){ if(activeUser) alert("Video call with "+activeUser); }
+function startAudioCall(){ if(activeUser) alert("Audio call with "+activeUser); }
+
+// PIN MODAL
+const pinModal = document.getElementById('pinModal');
+const pinInput = document.getElementById('pinInput');
+
+function openPinModal(){ pinModal.style.display='flex'; pinInput.value=''; pinInput.focus(); }
+function closePinModal(){ pinModal.style.display='none'; }
+function checkPin(){
+  if(pinInput.value==="C2025"){
+    alert("Correct PIN! Redirecting...");
+    window.location.href="Untitled-24.html";
+  } else {
+    alert("Incorrect PIN. Stay on this page.");
+    closePinModal();
+  }
+}
+
 // INITIAL RENDER
 renderUsers();
 </script>
-
 </body>
 </html>
