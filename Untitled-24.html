@@ -242,7 +242,7 @@ const emailUsers = {
 let users = emailUsers[loggedInEmail] || ["Arid","Fitte","travaile","couragesse","sociable","obeisante","fache"];
 let activeRecipients = new Set();
 let currentChatKey = null;
-const messagesDB = {}; // stores messages per recipient key
+const messagesDB = JSON.parse(localStorage.getItem("messagesDB") || "{}");
 
 const userList = document.getElementById("userList");
 const messages = document.getElementById("messages");
@@ -273,8 +273,9 @@ function renderMessages() {
   if (!currentChatKey) return;
   const chatMsgs = messagesDB[currentChatKey] || [];
   chatMsgs.forEach(m => {
+    const isMe = m.from === loggedInEmail;
     const b = document.createElement("div");
-    b.className = "bubble " + (m.from === loggedInEmail ? "me" : "them");
+    b.className = "bubble " + (isMe ? "me" : "them");
     b.textContent = m.text;
     messages.appendChild(b);
   });
@@ -285,18 +286,17 @@ sendBtn.onclick = () => {
   if (!currentChatKey) return;
   const msg = input.value.trim();
   if (!msg) return;
-  
-  // store message
+
   if (!messagesDB[currentChatKey]) messagesDB[currentChatKey] = [];
   messagesDB[currentChatKey].push({ from: loggedInEmail, text: msg });
-  
+  localStorage.setItem("messagesDB", JSON.stringify(messagesDB));
   renderMessages();
   input.value = "";
 
-  // simulate a reply from recipients
   setTimeout(() => {
     const replyText = "Reply from " + [...activeRecipients].join(", ");
     messagesDB[currentChatKey].push({ from: "recipient", text: replyText });
+    localStorage.setItem("messagesDB", JSON.stringify(messagesDB));
     renderMessages();
   }, 800);
 };
