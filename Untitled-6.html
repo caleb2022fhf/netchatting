@@ -15,7 +15,7 @@ body { margin:0; font-family:Arial, sans-serif; background:black; color:white; d
 .avatar { width:40px; height:40px; border-radius:50%; background:#555; margin-right:10px; position:relative; }
 .online-indicator { width:10px; height:10px; border-radius:50%; position:absolute; top:15px; right:10px; border:1px solid white; }
 
-.chat-window { flex:1; display:flex; flex-direction:column; background:#000; position:relative; }
+.chat-window { flex:1; display:flex; flex-direction:column; background:#000; }
 .chat-header { padding:10px; background:#111; border-bottom:1px solid #222; font-weight:bold; display:flex; align-items:center; gap:10px; }
 .back-icon { width:40px; height:40px; border-radius:50%; background: linear-gradient(135deg,#00ffff,#ff00ff); display:flex; justify-content:center; align-items:center; cursor:pointer; }
 .back-icon svg { width:20px; height:20px; fill:black; }
@@ -34,9 +34,12 @@ body { margin:0; font-family:Arial, sans-serif; background:black; color:white; d
 .icon-btn { width:35px; height:35px; border-radius:50%; background:#222; display:flex; justify-content:center; align-items:center; cursor:pointer; }
 .icon-btn:hover { background:#444; }
 
-#stickerPanel { display:none; position:absolute; bottom:70px; right:20px; background:#222; padding:10px; border-radius:10px; display:flex; gap:10px; flex-wrap:wrap; z-index:100; }
+#stickerPanel { display:none; position:absolute; bottom:70px; right:20px; background:#222; padding:10px; border-radius:10px; display:flex; gap:10px; flex-wrap:wrap; }
 #stickerPanel img { width:40px; cursor:pointer; }
 
+.bubble img { max-width:100%; border-radius:10px; display:block; }
+
+/* PIN MODAL */
 #pinModal {
   display:none;
   position:fixed;
@@ -53,8 +56,21 @@ body { margin:0; font-family:Arial, sans-serif; background:black; color:white; d
   display:flex; flex-direction:column; gap:10px;
   width:300px;
 }
-#pinModal input { padding:10px; border-radius:10px; border:none; background:#222; color:white; }
-#pinModal button { padding:10px; border-radius:10px; border:none; background:#00ffff; cursor:pointer; color:black; }
+#pinModal input {
+  padding:10px;
+  border-radius:10px;
+  border:none;
+  background:#222;
+  color:white;
+}
+#pinModal button {
+  padding:10px;
+  border-radius:10px;
+  border:none;
+  background:#00ffff;
+  cursor:pointer;
+  color:black;
+}
 </style>
 </head>
 <body>
@@ -75,15 +91,15 @@ body { margin:0; font-family:Arial, sans-serif; background:black; color:white; d
       <div class="icon-btn" onclick="startVideoCall()">📹</div>
       <div class="icon-btn" onclick="openPinModal()">S</div>
       <div class="icon-btn" onclick="startAudioCall()">🎧</div>
-      <label class="icon-btn" for="imageInput">📷</label>
-      <input type="file" id="imageInput" accept="image/*" hidden>
-      <div class="icon-btn" onclick="toggleStickers()">😊</div>
     </div>
   </div>
   <div class="chat-messages" id="chatMessages"></div>
   <div class="chat-input">
     <input type="text" id="chatInput" placeholder="Type a message..." disabled>
     <button id="sendBtn" disabled>Send</button>
+    <label class="icon-btn" for="imageInput">📷</label>
+    <input type="file" id="imageInput" accept="image/*" hidden>
+    <div class="icon-btn" onclick="toggleStickers()">😊</div>
   </div>
 </div>
 
@@ -104,37 +120,37 @@ body { margin:0; font-family:Arial, sans-serif; background:black; color:white; d
 </div>
 
 <script>
-// CURRENT USER
-const currentUser = localStorage.getItem('currentUsername') || prompt("Enter your username:");
-localStorage.setItem('currentUsername', currentUser);
+// SESSION LOGIN
+let currentUsername = localStorage.getItem('currentUsername') || "User1";
 
-// USERS LIST
+// USERS DYNAMIC
 let usersFromUntitled8 = JSON.parse(localStorage.getItem('usersFromUntitled8')) || ["User1","User2","User3"];
-usersFromUntitled8 = usersFromUntitled8.filter(u => u!==currentUser);
 const usersList = document.getElementById('usersList');
 let activeUser = null;
+
+function getChatKey(user){
+  return `chatData_${user}`;
+}
 
 function renderUsers(){
   usersList.innerHTML='';
   usersFromUntitled8.forEach(name=>{
     const div = document.createElement('div');
     div.className='user-card';
-    div.innerHTML=`<div class="avatar"><div class="online-indicator" style="background:green"></div></div>${name}`;
+    const online = (name === currentUsername) ? 'blue' : 'green';
+    div.innerHTML=`<div class="avatar"><div class="online-indicator" style="background:${online}"></div></div>${name}`;
     div.onclick=()=>openChat(name);
     usersList.appendChild(div);
   });
 }
 
-// CHAT STORAGE KEY
-function getChatKey(user1, user2){
-  return 'chat_' + [user1, user2].sort().join('_');
-}
-
-// OPEN CHAT
+// CHAT LOGIC
 const chatName = document.getElementById('chatName');
 const chatMessages = document.getElementById('chatMessages');
 const chatInput = document.getElementById('chatInput');
 const sendBtn = document.getElementById('sendBtn');
+const stickerPanel = document.getElementById('stickerPanel');
+const stickers = stickerPanel.querySelectorAll('img');
 
 function openChat(user){
   activeUser=user;
@@ -144,45 +160,49 @@ function openChat(user){
   renderMessages();
 }
 
-// RENDER MESSAGES
 function renderMessages(){
   if(!activeUser) return;
-  const key = getChatKey(currentUser, activeUser);
-  const msgs = JSON.parse(localStorage.getItem(key)) || [];
+  const isAtBottom = chatMessages.scrollHeight - chatMessages.scrollTop <= chatMessages.clientHeight + 50;
   chatMessages.innerHTML='';
+  const msgs = JSON.parse(localStorage.getItem(getChatKey(currentUsername))) || [];
   msgs.forEach(msg=>{
-    const div = document.createElement('div');
-    div.className = msg.sentBy===currentUser ? 'message sent' : 'message received';
-    if(msg.img){ 
-      const img=document.createElement('img');
-      img.src=msg.img;
-      img.style.maxWidth='200px';
-      img.style.borderRadius='10px';
-      div.appendChild(img);
-    } else {
-      div.textContent=msg.text;
+    if(msg.to === activeUser || msg.from === activeUser){
+      const div=document.createElement('div');
+      div.className=(msg.from===currentUsername)?'message sent':'message received';
+      if(msg.img){ 
+        const img=document.createElement('img'); 
+        img.src=msg.img; 
+        div.appendChild(img); 
+      } else div.textContent=msg.text;
+      const timeSpan=document.createElement('span');
+      timeSpan.className='time';
+      timeSpan.textContent=msg.time || new Date().toLocaleTimeString();
+      div.appendChild(timeSpan);
+      chatMessages.appendChild(div);
     }
-    const timeSpan = document.createElement('span');
-    timeSpan.className='time';
-    timeSpan.textContent = msg.time || new Date().toLocaleTimeString();
-    div.appendChild(timeSpan);
-    chatMessages.appendChild(div);
   });
-  chatMessages.scrollTop = chatMessages.scrollHeight;
+  if(isAtBottom) chatMessages.scrollTop = chatMessages.scrollHeight;
 }
 
-// SEND MESSAGE
 function addMessage(text, img=false){
   if(!activeUser) return;
-  const key = getChatKey(currentUser, activeUser);
-  const msgs = JSON.parse(localStorage.getItem(key)) || [];
-  const msg = { sentBy: currentUser, text:text||'', img:img||null, time:new Date().toLocaleTimeString() };
+  const msg={from:currentUsername, to:activeUser, text:text||'', img:img||null, time:new Date().toLocaleTimeString()};
+  let msgs = JSON.parse(localStorage.getItem(getChatKey(currentUsername))) || [];
   msgs.push(msg);
-  localStorage.setItem(key, JSON.stringify(msgs));
+  localStorage.setItem(getChatKey(currentUsername), JSON.stringify(msgs));
+  renderMessages();
+  setTimeout(()=>{simulateReply();},500);
+}
+
+function simulateReply(){
+  if(!activeUser) return;
+  const msg={from:activeUser, to:currentUsername, text:'Auto reply', time:new Date().toLocaleTimeString()};
+  let msgs = JSON.parse(localStorage.getItem(getChatKey(currentUsername))) || [];
+  msgs.push(msg);
+  localStorage.setItem(getChatKey(currentUsername), JSON.stringify(msgs));
   renderMessages();
 }
 
-// SEND BUTTON
 sendBtn.onclick=()=>{ 
   addMessage(chatInput.value);
   chatInput.value='';
@@ -198,8 +218,6 @@ document.getElementById('imageInput').onchange=()=>{
 }
 
 // STICKERS
-const stickerPanel = document.getElementById('stickerPanel');
-const stickers = stickerPanel.querySelectorAll('img');
 function toggleStickers(){ stickerPanel.style.display=stickerPanel.style.display==='flex'?'none':'flex'; }
 stickers.forEach(s=>{ s.onclick=()=>{ addMessage(null,s.src); stickerPanel.style.display='none'; } });
 
@@ -213,6 +231,7 @@ const pinInput = document.getElementById('pinInput');
 
 function openPinModal(){ pinModal.style.display='flex'; pinInput.value=''; pinInput.focus(); }
 function closePinModal(){ pinModal.style.display='none'; }
+
 function checkPin(){
   if(pinInput.value==="C2025"){
     alert("Correct PIN! Redirecting...");
