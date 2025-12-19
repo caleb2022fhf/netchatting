@@ -18,7 +18,6 @@ body {
   color: white;
 }
 
-/* HEADER */
 .header {
   text-align: center;
   font-size: 32px;
@@ -29,7 +28,6 @@ body {
   position: relative;
 }
 
-/* NEON BACK ICON */
 .back-container {
   position: absolute;
   top: 10px;
@@ -55,7 +53,6 @@ body {
   fill: black;
 }
 
-/* APP LAYOUT */
 .app {
   flex: 1;
   display: flex;
@@ -67,7 +64,6 @@ body {
   overflow: hidden;
 }
 
-/* SIDEBAR */
 .sidebar {
   width: 30%;
   background: rgba(255,255,255,0.08);
@@ -110,7 +106,6 @@ body {
   background: white;
 }
 
-/* CHAT AREA */
 .chat {
   width: 70%;
   display: flex;
@@ -131,7 +126,6 @@ body {
   gap: 10px;
 }
 
-/* BUTTONS */
 .hex-btn {
   width: 50px;
   height: 50px;
@@ -142,7 +136,6 @@ body {
   font-size: 20px;
 }
 
-/* MESSAGES */
 .messages {
   flex: 1;
   padding: 20px;
@@ -158,8 +151,8 @@ body {
 }
 
 .me { margin-left: auto; }
+.them { margin-right: auto; background: rgba(0,255,255,0.2); }
 
-/* INPUT */
 .input {
   display: flex;
   gap: 10px;
@@ -185,7 +178,6 @@ body {
   clip-path: polygon(25% 5%,75% 5%,100% 50%,75% 95%,25% 95%,0% 50%);
 }
 
-/* STICKERS */
 .stickers {
   display: flex;
   gap: 10px;
@@ -235,7 +227,6 @@ body {
 </div>
 
 <script>
-/* ===== EMAIL BASED USERS (ONLY ADDITION) ===== */
 const loggedInEmail = localStorage.getItem("loggedInEmail") || "";
 
 const emailUsers = {
@@ -248,11 +239,10 @@ const emailUsers = {
   "nishimwepaulette@gmail.com": ["sociable","fache","travaile","Arid","couragesse","obeisante"]
 };
 
-/* ORIGINAL LINE – ONLY MODIFIED */
 let users = emailUsers[loggedInEmail] || ["Arid","Fitte","travaile","couragesse","sociable","obeisante","fache"];
-
 let activeRecipients = new Set();
 let currentChatKey = null;
+const messagesDB = {}; // stores messages per recipient key
 
 const userList = document.getElementById("userList");
 const messages = document.getElementById("messages");
@@ -273,18 +263,42 @@ function toggleUser(name, div) {
   const box = div.querySelector(".status-box");
   activeRecipients.has(name) ? activeRecipients.delete(name) : activeRecipients.add(name);
   box.style.background = activeRecipients.has(name) ? "#00bfff" : "white";
-  chatName.textContent = [...activeRecipients].join(", ") || "Candidate";
+  currentChatKey = [...activeRecipients].sort().join(",");
+  chatName.textContent = currentChatKey || "Candidate";
+  renderMessages();
+}
+
+function renderMessages() {
+  messages.innerHTML = "";
+  if (!currentChatKey) return;
+  const chatMsgs = messagesDB[currentChatKey] || [];
+  chatMsgs.forEach(m => {
+    const b = document.createElement("div");
+    b.className = "bubble " + (m.from === loggedInEmail ? "me" : "them");
+    b.textContent = m.text;
+    messages.appendChild(b);
+  });
+  messages.scrollTop = messages.scrollHeight;
 }
 
 sendBtn.onclick = () => {
-  if (!activeRecipients.size) return;
+  if (!currentChatKey) return;
   const msg = input.value.trim();
   if (!msg) return;
-  const b = document.createElement("div");
-  b.className = "bubble me";
-  b.textContent = msg;
-  messages.appendChild(b);
+  
+  // store message
+  if (!messagesDB[currentChatKey]) messagesDB[currentChatKey] = [];
+  messagesDB[currentChatKey].push({ from: loggedInEmail, text: msg });
+  
+  renderMessages();
   input.value = "";
+
+  // simulate a reply from recipients
+  setTimeout(() => {
+    const replyText = "Reply from " + [...activeRecipients].join(", ");
+    messagesDB[currentChatKey].push({ from: "recipient", text: replyText });
+    renderMessages();
+  }, 800);
 };
 </script>
 
