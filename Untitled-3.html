@@ -119,9 +119,6 @@
 </div>
 
 <script>
-    // 🔥 DELETE ALL PREVIOUS USERS (RESET EMAILS)
-    localStorage.removeItem('users');
-
     const form = document.getElementById('registrationForm');
 
     form.addEventListener('submit', function(e) {
@@ -167,30 +164,17 @@
             return;
         }
 
-        // Emails that skip verification
-        const skipVerificationEmails = [
-            "nishimwepaulette@gmail.com",
-            "ishimwezigaabel@gmail.com",
-            "ishimwejeanpaul4@gmail.com",
-            "ilisacolombe@gmail.com",
-            "ingabirefrancine2008@gmail.com",
-            "cedro@gmail.com"
-        ];
+        // Get existing users from localStorage
+        const users = JSON.parse(localStorage.getItem('users')) || [];
 
-        if (!skipVerificationEmails.includes(email)) {
-            const verificationCode = Math.floor(100000 + Math.random() * 900000);
-            const userInput = prompt(
-                `Verification code sent to ${email}\nEnter the 6-digit code:`
-            );
-
-            if (userInput != verificationCode) {
-                alert("Incorrect verification code.");
-                return;
-            }
+        // Check if email is already used
+        if (users.some(user => user.email === email)) {
+            alert("This email is already registered.");
+            return;
         }
 
-        // Save only the new user
-        const users = [{ email, username, secondName, dob, password }];
+        // Save new user
+        users.push({ email, username, secondName, dob, password });
         localStorage.setItem('users', JSON.stringify(users));
 
         // Redirect
