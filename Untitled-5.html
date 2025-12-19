@@ -324,7 +324,13 @@ footer {
       <img id="userAvatar" src="" alt="Profile Picture">
       <div id="userName"></div>
     </div>
-    <div>Friends</div>
+
+    <!-- FRIENDS SECTION WITH USER PHOTO -->
+    <div id="friendsSection" style="display:flex; align-items:center; gap:10px;">
+      <img id="friendAvatar" src="" alt="Friend Pic" style="width:40px; height:40px; border-radius:50%; object-fit:cover;">
+      <span>Friends</span>
+    </div>
+
     <div>Shortcuts</div>
   </div>
 
@@ -397,6 +403,9 @@ window.addEventListener('DOMContentLoaded', function(){
   
   document.getElementById('userName').textContent = username;
   document.getElementById('userAvatar').src = profilePic;
+
+  // Set profile pic for friends section
+  document.getElementById('friendAvatar').src = profilePic;
 });
 
 // LIVE SEARCH WITH PROFILE PICTURE
