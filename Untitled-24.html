@@ -68,6 +68,8 @@ body {
   width: 30%;
   background: rgba(255,255,255,0.08);
   padding: 20px;
+  display: flex;
+  flex-direction: column;
 }
 
 .logo {
@@ -184,6 +186,35 @@ body {
   padding: 10px;
   overflow-x: auto;
 }
+
+/* small helper */
+.user.selected { background: rgba(0,191,255,0.12); }
+
+/* inject UI styling */
+.inject-container {
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid rgba(255,255,255,0.06);
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+.inject-container select,
+.inject-container input {
+  background: rgba(255,255,255,0.06);
+  color: white;
+  border: none;
+  padding: 8px;
+  border-radius: 8px;
+}
+.inject-container button {
+  background: #00bfff;
+  color: black;
+  border: none;
+  padding: 8px 10px;
+  border-radius: 8px;
+  cursor: pointer;
+}
 </style>
 </head>
 
@@ -203,6 +234,13 @@ body {
 <div class="sidebar">
   <div class="logo">Candidate</div>
   <div id="userList"></div>
+
+  <!-- Inject UI for testing incoming messages -->
+  <div class="inject-container" id="injectContainer" aria-hidden="false">
+    <select id="injectRecipient"></select>
+    <input id="injectText" placeholder="Incoming message text" />
+    <button id="injectBtn">Inject</button>
+  </div>
 </div>
 
 <div class="chat">
@@ -227,7 +265,18 @@ body {
 </div>
 
 <script>
-const loggedInEmail = localStorage.getItem("loggedInEmail") || "";
+/*
+  Integrated behavior:
+  - Uses localStorage to persist messages under STORAGE_KEY.
+  - Removes simulated replies. Incoming messages must be injected (for local testing)
+    or delivered by a server (e.g., via WebSocket) calling receiveMessage().
+  - The Inject UI in the sidebar lets you create real "received" messages that are saved.
+  - Group messages are stored under "group:Name1,Name2" and also duplicated into each member's individual chat.
+*/
+
+const STORAGE_KEY = "netless_messages_v1";
+const LAST_STATE_KEY = "netless_last_state";
+const loggedInEmail = localStorage.getItem("loggedInEmail") || "me@example.com";
 
 const emailUsers = {
   "aimecaleb05@gmail.com": ["Arid","Fitte","travaile","couragesse","sociable","obeisante"],
@@ -239,10 +288,10 @@ const emailUsers = {
   "nishimwepaulette@gmail.com": ["sociable","fache","travaile","Arid","couragesse","obeisante"]
 };
 
-let users = emailUsers[loggedInEmail] || ["Arid","Fitte","travaile","couragesse","sociable","obeisante","fache"];
+let users = emailUsers[localStorage.getItem("loggedInEmail")] || ["Arid","Fitte","travaile","couragesse","sociable","obeisante","fache"];
 let activeRecipients = new Set();
 let currentChatKey = null;
-const messagesDB = JSON.parse(localStorage.getItem("messagesDB") || "{}");
+let messagesDB = loadMessagesDB();
 
 const userList = document.getElementById("userList");
 const messages = document.getElementById("messages");
@@ -250,56 +299,246 @@ const input = document.getElementById("messageInput");
 const sendBtn = document.getElementById("sendBtn");
 const chatName = document.getElementById("chatName");
 
-/* USERS LIST */
-users.forEach(name => {
-  const div = document.createElement("div");
-  div.className = "user";
-  div.innerHTML = `<div class="avatar"></div><div class="name">${name}</div><div class="status-box"></div>`;
-  div.onclick = () => toggleUser(name, div);
-  userList.appendChild(div);
-});
+/* --- persistence helpers --- */
+function loadMessagesDB() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    return raw ? JSON.parse(raw) : {};
+  } catch (e) {
+    console.error("Failed to load messagesDB", e);
+    return {};
+  }
+}
 
+function saveMessagesDB() {
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(messagesDB));
+  } catch (e) {
+    console.error("Failed to save messagesDB", e);
+  }
+}
+
+/* --- UI: build user list --- */
+function buildUserList() {
+  userList.innerHTML = "";
+  users.forEach(name => {
+    const div = document.createElement("div");
+    div.className = "user";
+    div.innerHTML = `<div class="avatar"></div><div class="name">${name}</div><div class="status-box"></div>`;
+    div.onclick = () => toggleUser(name, div);
+    userList.appendChild(div);
+  });
+}
+buildUserList();
+
+/* --- toggle selection --- */
 function toggleUser(name, div) {
   const box = div.querySelector(".status-box");
-  activeRecipients.has(name) ? activeRecipients.delete(name) : activeRecipients.add(name);
-  box.style.background = activeRecipients.has(name) ? "#00bfff" : "white";
-  currentChatKey = [...activeRecipients].sort().join(",");
-  chatName.textContent = currentChatKey || "Candidate";
+  if (activeRecipients.has(name)) {
+    activeRecipients.delete(name);
+    div.classList.remove("selected");
+    box.style.background = "white";
+  } else {
+    activeRecipients.add(name);
+    div.classList.add("selected");
+    box.style.background = "#00bfff";
+  }
+
+  if (activeRecipients.size === 0) {
+    currentChatKey = null;
+    chatName.textContent = "Candidate";
+  } else if (activeRecipients.size === 1) {
+    currentChatKey = [...activeRecipients][0];
+    chatName.textContent = currentChatKey;
+  } else {
+    const sorted = [...activeRecipients].sort();
+    currentChatKey = "group:" + sorted.join(",");
+    chatName.textContent = "Group: " + sorted.join(", ");
+  }
+
   renderMessages();
 }
 
+/* --- render messages for currentChatKey --- */
 function renderMessages() {
   messages.innerHTML = "";
   if (!currentChatKey) return;
-  const chatMsgs = messagesDB[currentChatKey] || [];
-  chatMsgs.forEach(m => {
-    const isMe = m.from === loggedInEmail;
-    const b = document.createElement("div");
-    b.className = "bubble " + (isMe ? "me" : "them");
-    b.textContent = m.text;
-    messages.appendChild(b);
-  });
+
+  if (currentChatKey.startsWith("group:")) {
+    const groupMsgs = messagesDB[currentChatKey] || [];
+    groupMsgs.forEach(m => appendBubble(m));
+    const divider = document.createElement("div");
+    divider.style.opacity = "0.25";
+    divider.style.margin = "8px 0";
+    divider.textContent = "— Individual replies —";
+    messages.appendChild(divider);
+    const members = currentChatKey.replace("group:", "").split(",");
+    members.forEach(member => {
+      const chatMsgs = messagesDB[member] || [];
+      chatMsgs.forEach(m => appendBubble(m));
+    });
+  } else {
+    const chatMsgs = messagesDB[currentChatKey] || [];
+    chatMsgs.forEach(m => appendBubble(m));
+  }
+
   messages.scrollTop = messages.scrollHeight;
 }
 
+function appendBubble(m) {
+  const b = document.createElement("div");
+  b.className = "bubble " + (m.from === loggedInEmail ? "me" : "them");
+  b.textContent = m.text;
+  messages.appendChild(b);
+}
+
+/* --- receiveMessage: store real incoming messages --- */
+function receiveMessage(recipientKey, text, fromName) {
+  if (!recipientKey || !text) return;
+  if (!messagesDB[recipientKey]) messagesDB[recipientKey] = [];
+  messagesDB[recipientKey].push({
+    from: fromName || recipientKey,
+    text: text,
+    ts: Date.now()
+  });
+  saveMessagesDB();
+
+  // If viewing the relevant chat (single or group), re-render
+  if (currentChatKey === recipientKey) {
+    renderMessages();
+  } else if (currentChatKey && currentChatKey.startsWith("group:")) {
+    // if current group contains the recipient, re-render so group view shows the incoming message
+    const members = currentChatKey.replace("group:", "").split(",");
+    if (members.includes(recipientKey)) renderMessages();
+  }
+}
+
+/* --- sending messages (no simulated replies) --- */
 sendBtn.onclick = () => {
   if (!currentChatKey) return;
   const msg = input.value.trim();
   if (!msg) return;
 
-  if (!messagesDB[currentChatKey]) messagesDB[currentChatKey] = [];
-  messagesDB[currentChatKey].push({ from: loggedInEmail, text: msg });
-  localStorage.setItem("messagesDB", JSON.stringify(messagesDB));
-  renderMessages();
-  input.value = "";
+  const messageObj = { from: loggedInEmail, text: msg, ts: Date.now() };
 
-  setTimeout(() => {
-    const replyText = "Reply from " + [...activeRecipients].join(", ");
-    messagesDB[currentChatKey].push({ from: "recipient", text: replyText });
-    localStorage.setItem("messagesDB", JSON.stringify(messagesDB));
+  if (currentChatKey.startsWith("group:")) {
+    // store in group
+    if (!messagesDB[currentChatKey]) messagesDB[currentChatKey] = [];
+    messagesDB[currentChatKey].push(messageObj);
+
+    // also store in each member's individual chat
+    const members = currentChatKey.replace("group:", "").split(",");
+    members.forEach(member => {
+      if (!messagesDB[member]) messagesDB[member] = [];
+      messagesDB[member].push(messageObj);
+    });
+
+    saveMessagesDB();
     renderMessages();
-  }, 800);
+    input.value = "";
+
+    // No simulated replies here. Real replies should be delivered via receiveMessage() (e.g., from server or inject UI).
+  } else {
+    // single recipient
+    const recipient = currentChatKey;
+    if (!messagesDB[recipient]) messagesDB[recipient] = [];
+    messagesDB[recipient].push(messageObj);
+
+    saveMessagesDB();
+    renderMessages();
+    input.value = "";
+
+    // No simulated reply. Real incoming messages should call receiveMessage(recipient, text, fromName).
+  }
 };
+
+/* --- Inject UI wiring (for local testing of real incoming messages) --- */
+(function wireInjectUI() {
+  const sel = document.getElementById("injectRecipient");
+  const txt = document.getElementById("injectText");
+  const btn = document.getElementById("injectBtn");
+
+  // populate recipients (single names and group option example)
+  sel.innerHTML = "";
+  users.forEach(u => {
+    const opt = document.createElement("option");
+    opt.value = u;
+    opt.textContent = u;
+    sel.appendChild(opt);
+  });
+
+  // optional: add a sample group option for quick testing (comment out if undesired)
+  if (users.length >= 2) {
+    const groupOpt = document.createElement("option");
+    const sampleGroup = users.slice(0, 2).join(",");
+    groupOpt.value = "group:" + sampleGroup;
+    groupOpt.textContent = "Group: " + sampleGroup;
+    sel.appendChild(groupOpt);
+  }
+
+  btn.onclick = () => {
+    const r = sel.value;
+    const t = txt.value.trim();
+    if (!t) return;
+    // recipientKey can be "Arid" or "group:Arid,Fitte"
+    receiveMessage(r, t, r.startsWith("group:") ? "GroupMember" : r);
+    txt.value = "";
+  };
+})();
+
+/* --- restore last UI state (selected recipients) --- */
+function restoreLastState() {
+  try {
+    const last = JSON.parse(localStorage.getItem(LAST_STATE_KEY) || "null");
+    if (!last) return;
+    if (last.activeRecipients && Array.isArray(last.activeRecipients)) {
+      activeRecipients = new Set(last.activeRecipients.filter(n => users.includes(n)));
+      const userDivs = Array.from(userList.children);
+      userDivs.forEach(div => {
+        const name = div.querySelector(".name").textContent;
+        const box = div.querySelector(".status-box");
+        if (activeRecipients.has(name)) {
+          div.classList.add("selected");
+          box.style.background = "#00bfff";
+        } else {
+          div.classList.remove("selected");
+          box.style.background = "white";
+        }
+      });
+      if (activeRecipients.size === 1) {
+        currentChatKey = [...activeRecipients][0];
+        chatName.textContent = currentChatKey;
+      } else if (activeRecipients.size > 1) {
+        const sorted = [...activeRecipients].sort();
+        currentChatKey = "group:" + sorted.join(",");
+        chatName.textContent = "Group: " + sorted.join(", ");
+      } else {
+        currentChatKey = null;
+        chatName.textContent = "Candidate";
+      }
+      renderMessages();
+    }
+  } catch (e) {
+    console.warn("Could not restore last state", e);
+  }
+}
+
+/* save last state on unload */
+window.addEventListener("beforeunload", () => {
+  const state = { activeRecipients: [...activeRecipients] };
+  localStorage.setItem(LAST_STATE_KEY, JSON.stringify(state));
+});
+
+/* initialize */
+restoreLastState();
+
+/* Expose receiveMessage globally so a server integration (WebSocket) or other script can call it:
+   Example usage from external code:
+     receiveMessage("Arid", "Hi, I got your message", "Arid");
+   Or for group:
+     receiveMessage("group:Arid,Fitte", "Group reply", "Fitte");
+*/
+window.receiveMessage = receiveMessage;
 </script>
 
 </body>
