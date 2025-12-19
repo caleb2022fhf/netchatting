@@ -266,18 +266,19 @@ body {
 
 <script>
 /*
-  Integrated behavior:
-  - Uses localStorage to persist messages under STORAGE_KEY.
-  - Removes simulated replies. Incoming messages must be injected (for local testing)
-    or delivered by a server (e.g., via WebSocket) calling receiveMessage().
-  - The Inject UI in the sidebar lets you create real "received" messages that are saved.
-  - Group messages are stored under "group:Name1,Name2" and also duplicated into each member's individual chat.
+  This file uses the exact email->contacts mapping you requested.
+  - Sidebar shows contacts based on the logged-in email (localStorage.loggedInEmail).
+  - Messages are stored per account in localStorage under "netless_messages_v1".
+  - Sending a message stores it in the sender account and also stores it in the recipient account
+    so when the recipient logs in they will see the message.
+  - Use the Inject UI to simulate incoming messages for testing.
 */
 
 const STORAGE_KEY = "netless_messages_v1";
 const LAST_STATE_KEY = "netless_last_state";
-const loggedInEmail = localStorage.getItem("loggedInEmail") || "me@example.com";
+let loggedInEmail = localStorage.getItem("loggedInEmail") || "me@example.com";
 
+/* --- email -> contact names mapping (exact as you provided) --- */
 const emailUsers = {
   "aimecaleb05@gmail.com": ["Arid","Fitte","travaile","couragesse","sociable","obeisante"],
   "cedro@gmail.com": ["obeisante","fache","Arid","Fitte","travaile","couragesse"],
@@ -288,7 +289,16 @@ const emailUsers = {
   "nishimwepaulette@gmail.com": ["sociable","fache","travaile","Arid","couragesse","obeisante"]
 };
 
-let users = emailUsers[localStorage.getItem("loggedInEmail")] || ["Arid","Fitte","travaile","couragesse","sociable","obeisante","fache"];
+/* build reverse mapping name -> email (first match) */
+const nameToEmail = {};
+Object.keys(emailUsers).forEach(email => {
+  emailUsers[email].forEach(name => {
+    if (!nameToEmail[name]) nameToEmail[name] = email;
+  });
+});
+
+/* current user's contact list */
+let users = emailUsers[loggedInEmail] || ["Arid","Fitte","travaile","couragesse","sociable","obeisante","fache"];
 let activeRecipients = new Set();
 let currentChatKey = null;
 let messagesDB = loadMessagesDB();
@@ -318,13 +328,32 @@ function saveMessagesDB() {
   }
 }
 
+/* ensure account object exists */
+function ensureAccount(email) {
+  if (!messagesDB[email]) messagesDB[email] = { chats: {} };
+}
+
+/* ensure chat array exists */
+function ensureChat(email, chatKey) {
+  ensureAccount(email);
+  if (!messagesDB[email].chats[chatKey]) messagesDB[email].chats[chatKey] = [];
+}
+
 /* --- UI: build user list --- */
 function buildUserList() {
   userList.innerHTML = "";
   users.forEach(name => {
     const div = document.createElement("div");
     div.className = "user";
-    div.innerHTML = `<div class="avatar"></div><div class="name">${name}</div><div class="status-box"></div>`;
+    const emailForName = nameToEmail[name] || "";
+    div.innerHTML = `
+      <div class="avatar"></div>
+      <div style="flex:1">
+        <div class="name">${name}</div>
+        <div style="font-size:12px;opacity:0.8;margin-top:4px">${emailForName}</div>
+      </div>
+      <div class="status-box"></div>
+    `;
     div.onclick = () => toggleUser(name, div);
     userList.appendChild(div);
   });
@@ -364,8 +393,11 @@ function renderMessages() {
   messages.innerHTML = "";
   if (!currentChatKey) return;
 
+  ensureAccount(loggedInEmail);
+  const accountChats = messagesDB[loggedInEmail].chats;
+
   if (currentChatKey.startsWith("group:")) {
-    const groupMsgs = messagesDB[currentChatKey] || [];
+    const groupMsgs = accountChats[currentChatKey] || [];
     groupMsgs.forEach(m => appendBubble(m));
     const divider = document.createElement("div");
     divider.style.opacity = "0.25";
@@ -374,11 +406,11 @@ function renderMessages() {
     messages.appendChild(divider);
     const members = currentChatKey.replace("group:", "").split(",");
     members.forEach(member => {
-      const chatMsgs = messagesDB[member] || [];
+      const chatMsgs = accountChats[member] || [];
       chatMsgs.forEach(m => appendBubble(m));
     });
   } else {
-    const chatMsgs = messagesDB[currentChatKey] || [];
+    const chatMsgs = accountChats[currentChatKey] || [];
     chatMsgs.forEach(m => appendBubble(m));
   }
 
@@ -388,32 +420,37 @@ function renderMessages() {
 function appendBubble(m) {
   const b = document.createElement("div");
   b.className = "bubble " + (m.from === loggedInEmail ? "me" : "them");
-  b.textContent = m.text;
+  let senderLabel = m.from;
+  // if m.from is an email and maps to a name, show the name
+  if (m.from && m.from.includes("@")) {
+    const maybeName = Object.keys(nameToEmail).find(n => nameToEmail[n] === m.from);
+    if (maybeName) senderLabel = maybeName;
+  } else {
+    // m.from might be a name already
+    if (nameToEmail[m.from]) senderLabel = m.from;
+  }
+  if (m.from === loggedInEmail) senderLabel = "You";
+  b.textContent = `${senderLabel}: ${m.text}`;
   messages.appendChild(b);
 }
 
-/* --- receiveMessage: store real incoming messages --- */
-function receiveMessage(recipientKey, text, fromName) {
-  if (!recipientKey || !text) return;
-  if (!messagesDB[recipientKey]) messagesDB[recipientKey] = [];
-  messagesDB[recipientKey].push({
-    from: fromName || recipientKey,
+/* --- receiveMessage: store real incoming messages for a target account --- */
+function receiveMessageForAccount(targetAccountEmail, chatKey, text, fromEmail) {
+  if (!targetAccountEmail || !chatKey || !text) return;
+  ensureChat(targetAccountEmail, chatKey);
+  messagesDB[targetAccountEmail].chats[chatKey].push({
+    from: fromEmail || "unknown",
     text: text,
     ts: Date.now()
   });
   saveMessagesDB();
 
-  // If viewing the relevant chat (single or group), re-render
-  if (currentChatKey === recipientKey) {
+  if (loggedInEmail === targetAccountEmail) {
     renderMessages();
-  } else if (currentChatKey && currentChatKey.startsWith("group:")) {
-    // if current group contains the recipient, re-render so group view shows the incoming message
-    const members = currentChatKey.replace("group:", "").split(",");
-    if (members.includes(recipientKey)) renderMessages();
   }
 }
 
-/* --- sending messages (no simulated replies) --- */
+/* --- sending messages: store in sender account and in recipient account(s) --- */
 sendBtn.onclick = () => {
   if (!currentChatKey) return;
   const msg = input.value.trim();
@@ -421,67 +458,104 @@ sendBtn.onclick = () => {
 
   const messageObj = { from: loggedInEmail, text: msg, ts: Date.now() };
 
-  if (currentChatKey.startsWith("group:")) {
-    // store in group
-    if (!messagesDB[currentChatKey]) messagesDB[currentChatKey] = [];
-    messagesDB[currentChatKey].push(messageObj);
+  ensureAccount(loggedInEmail);
 
-    // also store in each member's individual chat
+  if (currentChatKey.startsWith("group:")) {
+    ensureChat(loggedInEmail, currentChatKey);
+    messagesDB[loggedInEmail].chats[currentChatKey].push(messageObj);
+
     const members = currentChatKey.replace("group:", "").split(",");
-    members.forEach(member => {
-      if (!messagesDB[member]) messagesDB[member] = [];
-      messagesDB[member].push(messageObj);
+    members.forEach(memberName => {
+      const recipientEmail = nameToEmail[memberName];
+      if (recipientEmail) {
+        ensureChat(recipientEmail, currentChatKey);
+        messagesDB[recipientEmail].chats[currentChatKey].push({ from: loggedInEmail, text: msg, ts: Date.now() });
+
+        const senderDisplayKey = getPreferredChatKeyForRecipient(recipientEmail, loggedInEmail);
+        ensureChat(recipientEmail, senderDisplayKey);
+        messagesDB[recipientEmail].chats[senderDisplayKey].push({ from: loggedInEmail, text: msg, ts: Date.now() });
+      }
+      ensureChat(loggedInEmail, memberName);
+      messagesDB[loggedInEmail].chats[memberName].push(messageObj);
     });
 
     saveMessagesDB();
     renderMessages();
     input.value = "";
 
-    // No simulated replies here. Real replies should be delivered via receiveMessage() (e.g., from server or inject UI).
   } else {
-    // single recipient
-    const recipient = currentChatKey;
-    if (!messagesDB[recipient]) messagesDB[recipient] = [];
-    messagesDB[recipient].push(messageObj);
+    const recipientName = currentChatKey;
+    ensureChat(loggedInEmail, recipientName);
+    messagesDB[loggedInEmail].chats[recipientName].push(messageObj);
+
+    const recipientEmail = nameToEmail[recipientName];
+    if (recipientEmail) {
+      const senderDisplayKey = getPreferredChatKeyForRecipient(recipientEmail, loggedInEmail);
+      ensureChat(recipientEmail, senderDisplayKey);
+      messagesDB[recipientEmail].chats[senderDisplayKey].push({ from: loggedInEmail, text: msg, ts: Date.now() });
+    }
 
     saveMessagesDB();
     renderMessages();
     input.value = "";
-
-    // No simulated reply. Real incoming messages should call receiveMessage(recipient, text, fromName).
   }
 };
 
-/* --- Inject UI wiring (for local testing of real incoming messages) --- */
+/* helper: decide what chat key the recipient will see for messages coming from senderEmail */
+function getPreferredChatKeyForRecipient(recipientEmail, senderEmail) {
+  const recipientContacts = emailUsers[recipientEmail] || [];
+  for (const name of recipientContacts) {
+    if (nameToEmail[name] === senderEmail) {
+      return name;
+    }
+  }
+  return senderEmail;
+}
+
+/* --- Inject UI wiring (for local testing of incoming messages to any account) --- */
 (function wireInjectUI() {
   const sel = document.getElementById("injectRecipient");
   const txt = document.getElementById("injectText");
   const btn = document.getElementById("injectBtn");
 
-  // populate recipients (single names and group option example)
   sel.innerHTML = "";
-  users.forEach(u => {
+  Object.keys(emailUsers).forEach(email => {
     const opt = document.createElement("option");
-    opt.value = u;
-    opt.textContent = u;
+    opt.value = email;
+    opt.textContent = "Account: " + email;
     sel.appendChild(opt);
   });
 
-  // optional: add a sample group option for quick testing (comment out if undesired)
+  const sep = document.createElement("option");
+  sep.disabled = true;
+  sep.textContent = "— Contacts (as chat keys) —";
+  sel.appendChild(sep);
+  users.forEach(u => {
+    const opt = document.createElement("option");
+    opt.value = u;
+    opt.textContent = "Chat key: " + u;
+    sel.appendChild(opt);
+  });
+
   if (users.length >= 2) {
     const groupOpt = document.createElement("option");
     const sampleGroup = users.slice(0, 2).join(",");
     groupOpt.value = "group:" + sampleGroup;
-    groupOpt.textContent = "Group: " + sampleGroup;
+    groupOpt.textContent = "Chat key: group:" + sampleGroup;
     sel.appendChild(groupOpt);
   }
 
   btn.onclick = () => {
     const r = sel.value;
     const t = txt.value.trim();
-    if (!t) return;
-    // recipientKey can be "Arid" or "group:Arid,Fitte"
-    receiveMessage(r, t, r.startsWith("group:") ? "GroupMember" : r);
+    if (!t || !r) return;
+
+    if (r.includes("@")) {
+      const chatKey = currentChatKey || "TestSender";
+      receiveMessageForAccount(r, chatKey, t, "test-sender@example.com");
+    } else {
+      receiveMessageForAccount(loggedInEmail, r, t, "external");
+    }
     txt.value = "";
   };
 })();
@@ -532,13 +606,23 @@ window.addEventListener("beforeunload", () => {
 /* initialize */
 restoreLastState();
 
-/* Expose receiveMessage globally so a server integration (WebSocket) or other script can call it:
-   Example usage from external code:
-     receiveMessage("Arid", "Hi, I got your message", "Arid");
-   Or for group:
-     receiveMessage("group:Arid,Fitte", "Group reply", "Fitte");
+/* Expose helper functions globally for testing or server integration:
+   - switchAccount(email) : change loggedInEmail and reload UI for that account
+   - receiveMessageForAccount(accountEmail, chatKey, text, fromEmail) : inject incoming message into a specific account
 */
-window.receiveMessage = receiveMessage;
+window.switchAccount = function(email) {
+  if (!email) return;
+  localStorage.setItem("loggedInEmail", email);
+  loggedInEmail = email;
+  users = emailUsers[loggedInEmail] || [];
+  activeRecipients.clear();
+  currentChatKey = null;
+  chatName.textContent = "Candidate";
+  buildUserList();
+  renderMessages();
+};
+
+window.receiveMessageForAccount = receiveMessageForAccount;
 </script>
 
 </body>
