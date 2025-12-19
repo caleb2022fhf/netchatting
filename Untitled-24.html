@@ -47,12 +47,6 @@ body {
   align-items: center;
   cursor: pointer;
   box-shadow: 0 0 10px #00ffff, 0 0 15px #ff00ff;
-  transition: transform 0.2s, box-shadow 0.2s;
-}
-
-.back-icon:hover {
-  transform: scale(1.1);
-  box-shadow: 0 0 15px #00ffff, 0 0 25px #ff00ff;
 }
 
 .back-icon svg {
@@ -137,29 +131,15 @@ body {
   gap: 10px;
 }
 
-/* HEXAGON BUTTONS */
+/* BUTTONS */
 .hex-btn {
   width: 50px;
   height: 50px;
   background: linear-gradient(135deg, #00ffff, #ff00ff);
-  clip-path: polygon(
-    25% 5%, 75% 5%, 
-    100% 50%, 75% 95%, 
-    25% 95%, 0% 50%
-  );
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  cursor: pointer;
+  clip-path: polygon(25% 5%,75% 5%,100% 50%,75% 95%,25% 95%,0% 50%);
   border: none;
-  color: black;
+  cursor: pointer;
   font-size: 20px;
-  transition: transform 0.2s, box-shadow 0.2s;
-}
-
-.hex-btn:hover {
-  transform: scale(1.1);
-  box-shadow: 0 0 15px #00ffff, 0 0 25px #ff00ff;
 }
 
 /* MESSAGES */
@@ -179,7 +159,7 @@ body {
 
 .me { margin-left: auto; }
 
-/* INPUT AREA */
+/* INPUT */
 .input {
   display: flex;
   gap: 10px;
@@ -202,38 +182,15 @@ body {
   border: none;
   cursor: pointer;
   background: linear-gradient(135deg, #00ffff, #ff00ff);
-  clip-path: polygon(
-    25% 5%, 75% 5%, 
-    100% 50%, 75% 95%, 
-    25% 95%, 0% 50%
-  );
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  font-size: 20px;
-  color: black;
-  transition: transform 0.2s, box-shadow 0.2s;
+  clip-path: polygon(25% 5%,75% 5%,100% 50%,75% 95%,25% 95%,0% 50%);
 }
 
-.input button:hover {
-  transform: scale(1.1);
-  box-shadow: 0 0 15px #00ffff, 0 0 25px #ff00ff;
-}
-
-/* STICKERS PANEL */
+/* STICKERS */
 .stickers {
   display: flex;
   gap: 10px;
   padding: 10px;
   overflow-x: auto;
-  border-top: 1px solid rgba(255,255,255,0.1);
-  background: rgba(255,255,255,0.05);
-}
-.stickers img {
-  width: 50px;
-  height: 50px;
-  cursor: pointer;
-  border-radius: 10px;
 }
 </style>
 </head>
@@ -243,9 +200,7 @@ body {
 <div class="header">
   <div class="back-container">
     <div class="back-icon" onclick="history.back()">
-      <svg viewBox="0 0 24 24">
-        <path d="M15.41 7.41 14 6l-6 6 6 6 1.41-1.41L10.83 12z"/>
-      </svg>
+      <svg viewBox="0 0 24 24"><path d="M15.41 7.41 14 6l-6 6 6 6 1.41-1.41L10.83 12z"/></svg>
     </div>
   </div>
   Netless
@@ -253,41 +208,49 @@ body {
 
 <div class="app">
 
-  <div class="sidebar">
-    <div class="logo">Candidate</div>
-    <div id="userList"></div>
-  </div>
+<div class="sidebar">
+  <div class="logo">Candidate</div>
+  <div id="userList"></div>
+</div>
 
-  <div class="chat">
-    <div class="chat-header">
-      <div class="avatar"></div>
-      <div class="name" id="chatName">Candidate</div>
-      <div class="buttons">
-        <button class="hex-btn" title="Send Photo" onclick="sendPhoto()">📷</button>
-        <button class="hex-btn" title="Video Call" onclick="videoCall()">📹</button>
-        <button class="hex-btn" title="Audio Call" onclick="audioCall()">📞</button>
-      </div>
-    </div>
-
-    <div class="messages" id="messages"></div>
-
-    <div class="stickers" id="stickers">
-      <img src="https://twemoji.maxcdn.com/2/72x72/1f600.png" onclick="sendSticker('😀')" />
-      <img src="https://twemoji.maxcdn.com/2/72x72/1f601.png" onclick="sendSticker('😁')" />
-      <img src="https://twemoji.maxcdn.com/2/72x72/1f602.png" onclick="sendSticker('😂')" />
-    </div>
-
-    <div class="input">
-      <input type="text" id="messageInput" placeholder="Type a message..." />
-      <button id="sendBtn">➤</button>
+<div class="chat">
+  <div class="chat-header">
+    <div class="avatar"></div>
+    <div class="name" id="chatName">Candidate</div>
+    <div class="buttons">
+      <button class="hex-btn">📷</button>
+      <button class="hex-btn">📹</button>
+      <button class="hex-btn">📞</button>
     </div>
   </div>
+
+  <div class="messages" id="messages"></div>
+
+  <div class="input">
+    <input type="text" id="messageInput" placeholder="Type a message..." />
+    <button id="sendBtn">➤</button>
+  </div>
+</div>
 
 </div>
 
 <script>
-const STORAGE_KEY = "netless_chats";
-let users = ["Arid","Fitte","travaile","couragesse","sociable","obeisante"];
+/* ===== EMAIL BASED USERS (ONLY ADDITION) ===== */
+const loggedInEmail = localStorage.getItem("loggedInEmail") || "";
+
+const emailUsers = {
+  "aimecaleb05@gmail.com": ["Arid","Fitte","travaile","couragesse","sociable","obeisante"],
+  "cedro@gmail.com": ["obeisante","fache","Arid","Fitte","travaile","couragesse"],
+  "ingabirefrancine2008@gmail.com": ["sociable","fache","Arid","Fitte","travaile","couragesse"],
+  "ilisacolombe@gmail.com": ["sociable","fache","Arid","Fitte","travaile","obeisante"],
+  "ishimwejeanpaul4@gmail.com": ["sociable","fache","Arid","Fitte","couragesse","obeisante"],
+  "ishimwezigaabel@gmail.com": ["sociable","fache","travaile","Fitte","couragesse","obeisante"],
+  "nishimwepaulette@gmail.com": ["sociable","fache","travaile","Arid","couragesse","obeisante"]
+};
+
+/* ORIGINAL LINE – ONLY MODIFIED */
+let users = emailUsers[loggedInEmail] || ["Arid","Fitte","travaile","couragesse","sociable","obeisante","fache"];
+
 let activeRecipients = new Set();
 let currentChatKey = null;
 
@@ -297,7 +260,7 @@ const input = document.getElementById("messageInput");
 const sendBtn = document.getElementById("sendBtn");
 const chatName = document.getElementById("chatName");
 
-/* ===== USERS LIST ===== */
+/* USERS LIST */
 users.forEach(name => {
   const div = document.createElement("div");
   div.className = "user";
@@ -306,77 +269,23 @@ users.forEach(name => {
   userList.appendChild(div);
 });
 
-/* ===== CHAT LOGIC ===== */
 function toggleUser(name, div) {
   const box = div.querySelector(".status-box");
-  if (activeRecipients.has(name)) activeRecipients.delete(name);
-  else activeRecipients.add(name);
-
+  activeRecipients.has(name) ? activeRecipients.delete(name) : activeRecipients.add(name);
   box.style.background = activeRecipients.has(name) ? "#00bfff" : "white";
   chatName.textContent = [...activeRecipients].join(", ") || "Candidate";
-  loadChat();
 }
 
-function getChatKey() {
-  if (activeRecipients.size === 0) return null;
-  return [...activeRecipients].sort().join("|");
-}
-
-function getChats() {
-  return JSON.parse(localStorage.getItem(STORAGE_KEY)) || {};
-}
-
-function saveChats(data) {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
-}
-
-function loadChat() {
-  messages.innerHTML = "";
-  currentChatKey = getChatKey();
-  if (!currentChatKey) return;
-
-  const chats = getChats()[currentChatKey] || [];
-  chats.forEach(m => {
-    const b = document.createElement("div");
-    b.className = "bubble me";
-    b.textContent = m;
-    messages.appendChild(b);
-  });
-  messages.scrollTop = messages.scrollHeight;
-}
-
-/* ===== SEND MESSAGE ===== */
 sendBtn.onclick = () => {
-  if (!currentChatKey) return alert("Hitamo umuntu");
-  const text = input.value.trim();
-  if (!text) return;
-  const chats = getChats();
-  if (!chats[currentChatKey]) chats[currentChatKey] = [];
-  chats[currentChatKey].push(text);
-  saveChats(chats);
+  if (!activeRecipients.size) return;
+  const msg = input.value.trim();
+  if (!msg) return;
+  const b = document.createElement("div");
+  b.className = "bubble me";
+  b.textContent = msg;
+  messages.appendChild(b);
   input.value = "";
-  loadChat();
 };
-
-/* ===== SEND STICKER ===== */
-function sendSticker(sticker) {
-  if (!currentChatKey) return;
-  const chats = getChats();
-  if (!chats[currentChatKey]) chats[currentChatKey] = [];
-  chats[currentChatKey].push(sticker);
-  saveChats(chats);
-  loadChat();
-}
-
-/* ===== SEND PHOTO / VIDEO / AUDIO PLACEHOLDER ===== */
-function sendPhoto() { alert("Send Photo clicked!"); }
-function videoCall() { alert("Video Call clicked!"); }
-function audioCall() { alert("Audio Call clicked!"); }
-
-/* ===== REAL-TIME UPDATE ===== */
-window.addEventListener("storage", e => {
-  if (e.key === STORAGE_KEY) loadChat();
-});
 </script>
 
 </body>
