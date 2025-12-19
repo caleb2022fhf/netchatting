@@ -176,13 +176,7 @@
             return;
         }
 
-        // ✅ EMAIL VERIFICATION (simple check for non-predefined emails)
-        const verificationCode = Math.floor(100000 + Math.random() * 900000);
-        const userInput = prompt(`Verification code sent to ${email}\nEnter the 6-digit code:`);
-        if (userInput != verificationCode) {
-            alert("Incorrect verification code.");
-            return;
-        }
+        // 🚫 REMOVED EMAIL VERIFICATION STEP
 
         // ✅ ASSIGN ALL TRAITS TO EVERY EMAIL
         const traits = allTraits;
