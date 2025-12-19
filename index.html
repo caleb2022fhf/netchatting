@@ -105,7 +105,7 @@
 </head>
 <body>
 
-<header>Net Chat</header> <!-- Hano twahinduye -->
+<header>Net Chat</header>
 
 <div class="login-box">
     <h2>Login</h2>
@@ -140,14 +140,19 @@ loginForm.addEventListener('submit', function(e){
     const userInput = document.getElementById('userInput').value;
     const password = document.getElementById('password').value;
 
-    // Reba localStorage ya registered users
-    let users = JSON.parse(localStorage.getItem('registeredUsers')) || [];
-    let found = users.find(u => u.email === userInput && u.pin === password);
+    // Reba localStorage ya registered users kuri page ya "Untitled-3"
+    let users = JSON.parse(localStorage.getItem('users')) || [];
+
+    // Shaka user ifite email na pin bihuye
+    let found = users.find(u => u.email === userInput && u.password === password);
 
     if(found){
-        window.location.href = 'Untitled-5.html';
+        // Niba bihuye, user ajye kuri Log In
+        if(confirm("Account found! Click OK to Log In.")){
+            window.location.href = 'Untitled-5.html'; // page yo kujya nyuma ya login
+        }
     } else {
-        alert("No account found. Please create an account.");
+        alert("No account found. Please create an account first.");
     }
 });
 
