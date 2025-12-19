@@ -19,16 +19,9 @@
         padding: 20px;
     }
 
-    h1 {
-        color: #00ffff;
-        margin-bottom: 5px;
-    }
+    h1 { color: #00ffff; margin-bottom: 5px; }
 
-    #usernameDisplay {
-        color: #ff00ff;
-        font-size: 18px;
-        margin-bottom: 15px;
-    }
+    #usernameDisplay { color: #ff00ff; font-size: 18px; margin-bottom: 15px; }
 
     #promoText {
         color: #ffffff;
@@ -38,9 +31,7 @@
         line-height: 1.5;
     }
 
-    #photoInput {
-        display: none; /* hide default file input */
-    }
+    #photoInput { display: none; }
 
     #uploadBtn {
         padding: 10px 20px;
@@ -53,22 +44,11 @@
         margin-bottom: 20px;
     }
 
-    #uploadBtn:hover {
-        background-color: #ff00ff;
-        color: white;
-    }
+    #uploadBtn:hover { background-color: #ff00ff; color: white; }
 
-    #preview {
-        display: none;
-        flex-direction: column;
-        align-items: center;
-    }
+    #preview { display: none; flex-direction: column; align-items: center; }
 
-    .photo-container {
-        position: relative;
-        width: 200px;
-        height: 200px;
-    }
+    .photo-container { position: relative; width: 200px; height: 200px; }
 
     #uploadedPhoto {
         width: 100%;
@@ -96,10 +76,7 @@
         cursor: pointer;
     }
 
-    #addIcon:hover {
-        background-color: #ff00ff;
-        color: white;
-    }
+    #addIcon:hover { background-color: #ff00ff; color: white; }
 
     #continueBtn {
         margin-top: 15px;
@@ -112,31 +89,25 @@
         font-size: 16px;
     }
 
-    #continueBtn:hover {
-        background-color: #ff00ff;
-        color: white;
-    }
+    #continueBtn:hover { background-color: #ff00ff; color: white; }
 </style>
 </head>
 <body>
 
 <h1>Upload Your Photo</h1>
 
-<!-- DISPLAY REGISTERED NAME -->
 <div id="usernameDisplay"></div>
 
-<!-- Promotional Paragraph -->
 <div id="promoText">
 Join our vibrant community by uploading your photo! Personalize your profile and start connecting with people who share your interests. The more you share, the more exciting your experience becomes. Don’t wait—make your mark and discover what’s waiting for you today!
 </div>
 
-<!-- Hidden file input -->
-<input type="file" id="photoInput" accept="image/*">
+<form id="photoForm" enctype="multipart/form-data" method="POST">
+    <input type="file" id="photoInput" name="photo" accept="image/*">
+</form>
 
-<!-- Upload Photo Button -->
 <button id="uploadBtn">Upload Photo</button>
 
-<!-- Preview Section -->
 <div id="preview">
     <div class="photo-container">
         <img id="uploadedPhoto" src="" alt="Your Photo">
@@ -146,16 +117,11 @@ Join our vibrant community by uploading your photo! Personalize your profile and
 </div>
 
 <script>
-/* DISPLAY USER NAME */
 const username = localStorage.getItem("username");
 const secondName = localStorage.getItem("secondName");
-if(username && secondName){
-    document.getElementById("usernameDisplay").textContent = `Welcome, ${username} ${secondName}`;
-} else {
-    document.getElementById("usernameDisplay").textContent = "Welcome!";
-}
+document.getElementById("usernameDisplay").textContent =
+    username && secondName ? `Welcome, ${username} ${secondName}` : "Welcome!";
 
-/* PHOTO UPLOAD LOGIC */
 const photoInput = document.getElementById('photoInput');
 const uploadBtn = document.getElementById('uploadBtn');
 const preview = document.getElementById('preview');
@@ -164,6 +130,7 @@ const addIcon = document.getElementById('addIcon');
 const continueBtn = document.getElementById('continueBtn');
 
 uploadBtn.addEventListener('click', () => photoInput.click());
+addIcon.addEventListener('click', () => photoInput.click());
 
 photoInput.addEventListener('change', () => {
     const file = photoInput.files[0];
@@ -176,13 +143,23 @@ photoInput.addEventListener('change', () => {
             document.getElementById('promoText').style.display = 'none';
         };
         reader.readAsDataURL(file);
+
+        // Upload to server
+        const formData = new FormData();
+        formData.append('photo', file);
+
+        fetch('save_photo.php', {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => response.text())
+        .then(data => console.log('Server response:', data))
+        .catch(error => console.error('Upload error:', error));
     }
 });
 
-addIcon.addEventListener('click', () => photoInput.click());
-
 continueBtn.addEventListener('click', () => {
-    window.location.href = "Untitled-5.html"; // redirect to your next page
+    window.location.href = "Untitled-5.html";
 });
 </script>
 
