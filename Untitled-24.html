@@ -28,6 +28,15 @@ body {
   position: relative;
 }
 
+.header .email {
+  position: absolute;
+  right: 12px;
+  top: 12px;
+  font-size: 12px;
+  color: #fff;
+  opacity: 0.9;
+}
+
 .back-container {
   position: absolute;
   top: 10px;
@@ -180,17 +189,6 @@ body {
   clip-path: polygon(25% 5%,75% 5%,100% 50%,75% 95%,25% 95%,0% 50%);
 }
 
-.stickers {
-  display: flex;
-  gap: 10px;
-  padding: 10px;
-  overflow-x: auto;
-}
-
-/* small helper */
-.user.selected { background: rgba(0,191,255,0.12); }
-
-/* inject UI styling */
 .inject-container {
   margin-top: 12px;
   padding-top: 12px;
@@ -215,6 +213,8 @@ body {
   border-radius: 8px;
   cursor: pointer;
 }
+
+.user.selected { background: rgba(0,191,255,0.12); }
 </style>
 </head>
 
@@ -227,6 +227,7 @@ body {
     </div>
   </div>
   Netless
+  <div class="email" id="headerEmail"></div>
 </div>
 
 <div class="app">
@@ -235,7 +236,6 @@ body {
   <div class="logo">Candidate</div>
   <div id="userList"></div>
 
-  <!-- Inject UI for testing incoming messages -->
   <div class="inject-container" id="injectContainer" aria-hidden="false">
     <select id="injectRecipient"></select>
     <input id="injectText" placeholder="Incoming message text" />
@@ -266,19 +266,20 @@ body {
 
 <script>
 /*
-  This file uses the exact email->contacts mapping you requested.
-  - Sidebar shows contacts based on the logged-in email (localStorage.loggedInEmail).
-  - Messages are stored per account in localStorage under "netless_messages_v1".
-  - Sending a message stores it in the sender account and also stores it in the recipient account
-    so when the recipient logs in they will see the message.
-  - Use the Inject UI to simulate incoming messages for testing.
+  This file is the original chat UI updated so the sidebar contacts are chosen
+  based on the logged-in email using the exact mapping you provided.
+  - Set logged-in email in localStorage under "loggedInEmail" to switch accounts.
+  - Messages are persisted in localStorage under "netless_messages_v1".
+  - Sending a message stores it for the sender and also stores it for the recipient account
+    so the recipient will see it when they log in (local-only simulation).
+  - The Inject UI lets you add incoming messages for testing.
 */
 
 const STORAGE_KEY = "netless_messages_v1";
 const LAST_STATE_KEY = "netless_last_state";
-let loggedInEmail = localStorage.getItem("loggedInEmail") || "me@example.com";
+let loggedInEmail = localStorage.getItem("loggedInEmail") || "aimecaleb05@gmail.com";
 
-/* --- email -> contact names mapping (exact as you provided) --- */
+/* exact mapping requested */
 const emailUsers = {
   "aimecaleb05@gmail.com": ["Arid","Fitte","travaile","couragesse","sociable","obeisante"],
   "cedro@gmail.com": ["obeisante","fache","Arid","Fitte","travaile","couragesse"],
@@ -289,7 +290,7 @@ const emailUsers = {
   "nishimwepaulette@gmail.com": ["sociable","fache","travaile","Arid","couragesse","obeisante"]
 };
 
-/* build reverse mapping name -> email (first match) */
+/* reverse map name -> email (first match) */
 const nameToEmail = {};
 Object.keys(emailUsers).forEach(email => {
   emailUsers[email].forEach(name => {
@@ -297,19 +298,23 @@ Object.keys(emailUsers).forEach(email => {
   });
 });
 
-/* current user's contact list */
-let users = emailUsers[loggedInEmail] || ["Arid","Fitte","travaile","couragesse","sociable","obeisante","fache"];
-let activeRecipients = new Set();
-let currentChatKey = null;
-let messagesDB = loadMessagesDB();
-
+/* UI refs */
+const headerEmail = document.getElementById("headerEmail");
 const userList = document.getElementById("userList");
 const messages = document.getElementById("messages");
 const input = document.getElementById("messageInput");
 const sendBtn = document.getElementById("sendBtn");
 const chatName = document.getElementById("chatName");
+const injectRecipient = document.getElementById("injectRecipient");
+const injectText = document.getElementById("injectText");
+const injectBtn = document.getElementById("injectBtn");
 
-/* --- persistence helpers --- */
+let users = emailUsers[loggedInEmail] || ["Arid","Fitte","travaile","couragesse","sociable","obeisante"];
+let activeRecipients = new Set();
+let currentChatKey = null;
+let messagesDB = loadMessagesDB();
+
+/* persistence helpers */
 function loadMessagesDB() {
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
@@ -328,39 +333,71 @@ function saveMessagesDB() {
   }
 }
 
-/* ensure account object exists */
+/* ensure account/chat helpers */
 function ensureAccount(email) {
   if (!messagesDB[email]) messagesDB[email] = { chats: {} };
 }
-
-/* ensure chat array exists */
-function ensureChat(email, chatKey) {
+function ensureChat(email, key) {
   ensureAccount(email);
-  if (!messagesDB[email].chats[chatKey]) messagesDB[email].chats[chatKey] = [];
+  if (!messagesDB[email].chats[key]) messagesDB[email].chats[key] = [];
 }
 
-/* --- UI: build user list --- */
+/* show logged in email in header */
+function renderHeaderEmail() {
+  headerEmail.textContent = loggedInEmail;
+}
+renderHeaderEmail();
+
+/* build sidebar based on loggedInEmail */
 function buildUserList() {
+  users = emailUsers[loggedInEmail] || [];
   userList.innerHTML = "";
   users.forEach(name => {
     const div = document.createElement("div");
     div.className = "user";
     const emailForName = nameToEmail[name] || "";
-    div.innerHTML = `
-      <div class="avatar"></div>
+    div.innerHTML = `<div class="avatar"></div>
       <div style="flex:1">
         <div class="name">${name}</div>
         <div style="font-size:12px;opacity:0.8;margin-top:4px">${emailForName}</div>
       </div>
-      <div class="status-box"></div>
-    `;
+      <div class="status-box"></div>`;
     div.onclick = () => toggleUser(name, div);
     userList.appendChild(div);
   });
+
+  // populate injectRecipient options for testing
+  injectRecipient.innerHTML = "";
+  // allow injecting into any account (by email)
+  Object.keys(emailUsers).forEach(email => {
+    const opt = document.createElement("option");
+    opt.value = email;
+    opt.textContent = "Account: " + email;
+    injectRecipient.appendChild(opt);
+  });
+  // also allow injecting into current account under a chat key
+  const sep = document.createElement("option");
+  sep.disabled = true;
+  sep.textContent = "— Chat keys for current account —";
+  injectRecipient.appendChild(sep);
+  users.forEach(u => {
+    const opt = document.createElement("option");
+    opt.value = u;
+    opt.textContent = "Chat key: " + u;
+    injectRecipient.appendChild(opt);
+  });
+  // sample group option
+  if (users.length >= 2) {
+    const groupOpt = document.createElement("option");
+    const sampleGroup = users.slice(0,2).join(",");
+    groupOpt.value = "group:" + sampleGroup;
+    groupOpt.textContent = "Chat key: group:" + sampleGroup;
+    injectRecipient.appendChild(groupOpt);
+  }
 }
 buildUserList();
 
-/* --- toggle selection --- */
+/* toggle selection (single or multi) */
 function toggleUser(name, div) {
   const box = div.querySelector(".status-box");
   if (activeRecipients.has(name)) {
@@ -388,7 +425,7 @@ function toggleUser(name, div) {
   renderMessages();
 }
 
-/* --- render messages for currentChatKey --- */
+/* render messages for currentChatKey */
 function renderMessages() {
   messages.innerHTML = "";
   if (!currentChatKey) return;
@@ -421,12 +458,10 @@ function appendBubble(m) {
   const b = document.createElement("div");
   b.className = "bubble " + (m.from === loggedInEmail ? "me" : "them");
   let senderLabel = m.from;
-  // if m.from is an email and maps to a name, show the name
   if (m.from && m.from.includes("@")) {
     const maybeName = Object.keys(nameToEmail).find(n => nameToEmail[n] === m.from);
     if (maybeName) senderLabel = maybeName;
   } else {
-    // m.from might be a name already
     if (nameToEmail[m.from]) senderLabel = m.from;
   }
   if (m.from === loggedInEmail) senderLabel = "You";
@@ -434,7 +469,7 @@ function appendBubble(m) {
   messages.appendChild(b);
 }
 
-/* --- receiveMessage: store real incoming messages for a target account --- */
+/* receiveMessage: store incoming message into a specific account/chat */
 function receiveMessageForAccount(targetAccountEmail, chatKey, text, fromEmail) {
   if (!targetAccountEmail || !chatKey || !text) return;
   ensureChat(targetAccountEmail, chatKey);
@@ -445,12 +480,10 @@ function receiveMessageForAccount(targetAccountEmail, chatKey, text, fromEmail) 
   });
   saveMessagesDB();
 
-  if (loggedInEmail === targetAccountEmail) {
-    renderMessages();
-  }
+  if (loggedInEmail === targetAccountEmail) renderMessages();
 }
 
-/* --- sending messages: store in sender account and in recipient account(s) --- */
+/* send message: store in sender account and in recipient account(s) */
 sendBtn.onclick = () => {
   if (!currentChatKey) return;
   const msg = input.value.trim();
@@ -501,7 +534,7 @@ sendBtn.onclick = () => {
   }
 };
 
-/* helper: decide what chat key the recipient will see for messages coming from senderEmail */
+/* decide what chat key recipient will see for messages from senderEmail */
 function getPreferredChatKeyForRecipient(recipientEmail, senderEmail) {
   const recipientContacts = emailUsers[recipientEmail] || [];
   for (const name of recipientContacts) {
@@ -512,59 +545,31 @@ function getPreferredChatKeyForRecipient(recipientEmail, senderEmail) {
   return senderEmail;
 }
 
-/* --- Inject UI wiring (for local testing of incoming messages to any account) --- */
+/* Inject UI wiring (for local testing) */
 (function wireInjectUI() {
-  const sel = document.getElementById("injectRecipient");
-  const txt = document.getElementById("injectText");
-  const btn = document.getElementById("injectBtn");
-
-  sel.innerHTML = "";
-  Object.keys(emailUsers).forEach(email => {
-    const opt = document.createElement("option");
-    opt.value = email;
-    opt.textContent = "Account: " + email;
-    sel.appendChild(opt);
-  });
-
-  const sep = document.createElement("option");
-  sep.disabled = true;
-  sep.textContent = "— Contacts (as chat keys) —";
-  sel.appendChild(sep);
-  users.forEach(u => {
-    const opt = document.createElement("option");
-    opt.value = u;
-    opt.textContent = "Chat key: " + u;
-    sel.appendChild(opt);
-  });
-
-  if (users.length >= 2) {
-    const groupOpt = document.createElement("option");
-    const sampleGroup = users.slice(0, 2).join(",");
-    groupOpt.value = "group:" + sampleGroup;
-    groupOpt.textContent = "Chat key: group:" + sampleGroup;
-    sel.appendChild(groupOpt);
-  }
-
-  btn.onclick = () => {
-    const r = sel.value;
-    const t = txt.value.trim();
+  injectBtn.onclick = () => {
+    const r = injectRecipient.value;
+    const t = injectText.value.trim();
     if (!t || !r) return;
 
     if (r.includes("@")) {
+      // inject into that account under currentChatKey or "TestSender"
       const chatKey = currentChatKey || "TestSender";
       receiveMessageForAccount(r, chatKey, t, "test-sender@example.com");
     } else {
+      // inject into current logged-in account under chat key r
       receiveMessageForAccount(loggedInEmail, r, t, "external");
     }
-    txt.value = "";
+    injectText.value = "";
   };
 })();
 
-/* --- restore last UI state (selected recipients) --- */
+/* restore last UI state */
 function restoreLastState() {
   try {
     const last = JSON.parse(localStorage.getItem(LAST_STATE_KEY) || "null");
     if (!last) return;
+    if (last.email && last.email !== loggedInEmail) return;
     if (last.activeRecipients && Array.isArray(last.activeRecipients)) {
       activeRecipients = new Set(last.activeRecipients.filter(n => users.includes(n)));
       const userDivs = Array.from(userList.children);
@@ -599,29 +604,35 @@ function restoreLastState() {
 
 /* save last state on unload */
 window.addEventListener("beforeunload", () => {
-  const state = { activeRecipients: [...activeRecipients] };
+  const state = { email: loggedInEmail, activeRecipients: [...activeRecipients] };
   localStorage.setItem(LAST_STATE_KEY, JSON.stringify(state));
 });
 
-/* initialize */
-restoreLastState();
-
-/* Expose helper functions globally for testing or server integration:
-   - switchAccount(email) : change loggedInEmail and reload UI for that account
-   - receiveMessageForAccount(accountEmail, chatKey, text, fromEmail) : inject incoming message into a specific account
-*/
+/* switch account helper for testing */
 window.switchAccount = function(email) {
   if (!email) return;
   localStorage.setItem("loggedInEmail", email);
   loggedInEmail = email;
-  users = emailUsers[loggedInEmail] || [];
+  renderHeaderEmail();
+  buildUserList();
   activeRecipients.clear();
   currentChatKey = null;
   chatName.textContent = "Candidate";
-  buildUserList();
-  renderMessages();
+  messages.innerHTML = "";
 };
 
+/* initialize */
+renderHeaderEmail();
+buildUserList();
+restoreLastState();
+
+/* expose receiveMessageForAccount for external integration */
+window.receiveMessageForAccount = receiveMessageForAccount;
+</script>
+
+</body>
+</html>
+``` */
 window.receiveMessageForAccount = receiveMessageForAccount;
 </script>
 
