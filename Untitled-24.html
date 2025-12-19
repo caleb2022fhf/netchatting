@@ -266,8 +266,7 @@ body {
 
 <script>
 /*
-  This file is the original chat UI updated so the sidebar contacts are chosen
-  based on the logged-in email using the exact mapping you provided.
+  Original chat UI with the exact sidebar contact mapping you requested.
   - Set logged-in email in localStorage under "loggedInEmail" to switch accounts.
   - Messages are persisted in localStorage under "netless_messages_v1".
   - Sending a message stores it for the sender and also stores it for the recipient account
@@ -627,12 +626,6 @@ buildUserList();
 restoreLastState();
 
 /* expose receiveMessageForAccount for external integration */
-window.receiveMessageForAccount = receiveMessageForAccount;
-</script>
-
-</body>
-</html>
-``` */
 window.receiveMessageForAccount = receiveMessageForAccount;
 </script>
 
