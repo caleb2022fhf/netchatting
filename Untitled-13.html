@@ -1,4 +1,4 @@
-<!DOCTYPE html> 
+<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -118,17 +118,51 @@
 </div>
 
 <script>
+  /**
+   * Ensure clicking Logout, Back to Login, or the back icon
+   * clears the session (optional) and keeps the user on index.html.
+   *
+   * Using location.replace keeps the user on index.html and prevents
+   * the logout page from remaining in the browser history.
+   */
+
+  function clearSessionData() {
+    // Clear any session-related keys you use. Adjust keys as needed.
+    try {
+      localStorage.removeItem('currentUser');   // example key
+      localStorage.removeItem('loginAttempt');  // example key
+      sessionStorage.clear();                   // clear sessionStorage if used
+      // Do NOT remove 'users' unless you intentionally want to delete registrations.
+    } catch (err) {
+      // ignore storage errors
+      console.warn('Storage clear error', err);
+    }
+  }
+
   function logout() {
+    // Clear session data (optional)
+    clearSessionData();
+
+    // Optional: show a brief message
     alert("You have been logged out successfully!");
-    window.location.href = "index.html"; // redirect to index.html
+
+    // Navigate to index.html and replace history entry so user "stays" on index.html
+    // (prevents back button returning to this logout page)
+    window.location.replace("index.html");
   }
 
   function goToLogin() {
-    window.location.href = "index.html"; // redirect to index.html
+    // If you want to ensure session is cleared before going to login, uncomment:
+    // clearSessionData();
+
+    // Replace history entry and go to index.html
+    window.location.replace("index.html");
   }
 
   function goBack() {
-    window.location.href = "index.html"; // redirect back icon to index.html
+    // Same behavior for the back icon
+    // clearSessionData(); // optional
+    window.location.replace("index.html");
   }
 </script>
 
