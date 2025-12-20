@@ -1,171 +1,99 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Login Page</title>
-    <style>
-        body {
-            background: black;
-            font-family: Arial, sans-serif;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            height: 100vh;
-            margin: 0;
-        }
-
-        header {
-            color: #00ffff;
-            font-size: 48px;
-            font-weight: bold;
-            text-shadow: 2px 2px 5px #ff00ff;
-            margin-bottom: 30px;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            letter-spacing: 3px;
-            text-align: center;
-        }
-
-        .login-box {
-            background: white;
-            padding: 30px;
-            border-radius: 10px;
-            box-shadow: 0 0 10px rgba(255,255,255,0.2);
-            width: 300px;
-            text-align: center;
-            position: relative;
-        }
-
-        .input-container {
-            position: relative;
-            margin-bottom: 10px;
-        }
-
-        input {
-            width: 100%;
-            padding: 10px;
-            padding-right: 40px;
-            margin: 10px 0;
-            border-radius: 5px;
-            border: 1px solid #ccc;
-        }
-
-        .toggle-eye {
-            position: absolute;
-            top: 50%;
-            right: 12px;
-            transform: translateY(-50%);
-            cursor: pointer;
-            fill: #555;
-            width: 20px;
-            height: 20px;
-        }
-
-        button, button.login-btn, button.secondary, button.link-btn {
-            width: 100%;
-            padding: 10px;
-            margin: 10px 0;
-            border-radius: 5px;
-        }
-
-        button.login-btn {
-            border: none;
-            background: #007bff;
-            color: white;
-            cursor: pointer;
-        }
-
-        button.login-btn:hover {
-            background: #0056b3;
-        }
-
-        button.secondary {
-            background: #28a745;
-            color: white;
-            border: none;
-            cursor: pointer;
-        }
-
-        button.secondary:hover {
-            background: #1f7a32;
-        }
-
-        button.link-btn {
-            background: none;
-            border: none;
-            color: #007bff;
-            text-decoration: underline;
-            cursor: pointer;
-            padding: 5px 0;
-        }
-
-        button.link-btn:hover {
-            color: #0056b3;
-        }
-    </style>
+  <meta charset="utf-8" />
+  <title>Account Check</title>
+  <style>
+    body {
+      background: #f5f5f5;
+      font-family: Arial, sans-serif;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      margin: 0;
+    }
+    .box {
+      background: white;
+      padding: 24px;
+      border-radius: 8px;
+      width: 360px;
+      box-shadow: 0 6px 18px rgba(0,0,0,0.08);
+      text-align: center;
+    }
+    .btn { display:block; width:100%; padding:10px; margin-top:10px; border-radius:6px; border:none; cursor:pointer; }
+    .btn-primary { background:#007bff; color:#fff; }
+    .btn-secondary { background:#28a745; color:#fff; }
+    .btn-link { background:none; color:#007bff; text-decoration:underline; }
+  </style>
 </head>
 <body>
 
-<header>Net Chat</header>
+<div class="box" id="box">
+  <h2>Checking account...</h2>
+  <p id="message">Please wait while we verify your credentials.</p>
 
-<div class="login-box">
-    <h2>Login</h2>
-
-    <form id="loginForm">
-        <label>Email:</label>
-        <input type="text" id="userInput" required>
-
-        <div class="input-container">
-            <label>PIN:</label>
-            <input type="password" id="password" required>
-            <svg class="toggle-eye" onclick="togglePassword('password', this)" viewBox="0 0 24 24">
-                <path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zm0 12c-2.49 0-4.5-2.01-4.5-4.5S9.51 7.5 12 7.5 16.5 9.51 16.5 12 14.49 16.5 12 16.5zm0-7c-1.38 0-2.5 1.12-2.5 2.5S10.62 14.5 12 14.5 14.5 13.38 14.5 12 13.38 9.5 12 9.5z"/>
-            </svg>
-        </div>
-
-        <button type="submit" class="login-btn">Login</button>
-    </form>
-
-    <!-- Links -->
-    <button class="link-btn" onclick="window.location.href='Untitled-16.html'">Forgot Password?</button>
-    <button class="link-btn" onclick="window.location.href='interemail.html'">Other Issue</button>
-    <button class="secondary" onclick="window.location.href='Untitled-3.html'">Create account</button>
+  <button id="createBtn" class="btn btn-secondary" style="display:none;">Create account</button>
+  <button id="backBtn" class="btn btn-link" style="display:none;">Back to Login</button>
 </div>
 
 <script>
-const loginForm = document.getElementById('loginForm');
+  window.addEventListener('DOMContentLoaded', function() {
+    const messageEl = document.getElementById('message');
+    const createBtn = document.getElementById('createBtn');
+    const backBtn = document.getElementById('backBtn');
 
-loginForm.addEventListener('submit', function(e){
-    e.preventDefault();
+    // Retrieve the login attempt and registered users
+    const attemptRaw = localStorage.getItem('loginAttempt');
+    const users = JSON.parse(localStorage.getItem('users')) || [];
 
-    const userInput = document.getElementById('userInput').value;
-    const password = document.getElementById('password').value;
-
-    // Reba localStorage ya registered users kuri page ya "Untitled-3"
-    let users = JSON.parse(localStorage.getItem('users')) || [];
-
-    // Shaka user ifite email na pin bihuye
-    let found = users.find(u => u.email === userInput && u.password === password);
-
-    if(found){
-        // Niba bihuye, user ajye kuri Log In
-        if(confirm("Account found! Click OK to Log In.")){
-            window.location.href = 'Untitled-5.html'; // page yo kujya nyuma ya login
-        }
-    } else {
-        alert("No account found. Please create an account first.");
+    if(!attemptRaw) {
+      // No attempt found — show friendly message and link back to login
+      messageEl.textContent = "No login attempt found. Please go back to the login page and enter your email and PIN.";
+      showBack();
+      return;
     }
-});
 
-function togglePassword(id, icon) {
-    const input = document.getElementById(id);
-    if(input.type === 'password') {
-        input.type = 'text';
-        icon.style.fill = '#007bff';
+    const attempt = JSON.parse(attemptRaw);
+    const found = users.find(u => u.email === attempt.email && u.password === attempt.password);
+
+    // Clear the temporary attempt after checking
+    localStorage.removeItem('loginAttempt');
+
+    if(found) {
+      // Account exists — confirm and redirect to post-login page
+      messageEl.textContent = "Account found. Redirecting you now...";
+      // small delay so user sees the message
+      setTimeout(() => {
+        // Replace with your actual post-login page
+        window.location.href = 'Untitled-5.html';
+      }, 900);
     } else {
-        input.type = 'password';
-        icon.style.fill = '#555';
+      // Not found — show options to create account or go back
+      messageEl.textContent = "No account found with those credentials.";
+      showCreate();
     }
-}
+
+    function showCreate() {
+      createBtn.style.display = 'block';
+      backBtn.style.display = 'block';
+      createBtn.addEventListener('click', () => {
+        // Go to your create-account page
+        window.location.href = 'Untitled-3.html'; // if this page is also the create page, change accordingly
+        // If your create-account page is a different file, set that filename here.
+      });
+      backBtn.addEventListener('click', () => {
+        window.location.href = 'index.html'; // change to your login page filename if different
+      });
+    }
+
+    function showBack() {
+      backBtn.style.display = 'block';
+      backBtn.addEventListener('click', () => {
+        window.location.href = 'index.html';
+      });
+    }
+  });
 </script>
 
 </body>
