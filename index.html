@@ -1,155 +1,164 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Login Page</title>
-<style>
-    body {
-        margin: 0;
-        height: 100vh;
-        background-color: black;
-        font-family: Arial, sans-serif;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        color: white;
-        position: relative;
-    }
+    <title>Login Page</title>
+    <style>
+        body {
+            background: black;
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+        }
 
-    .container {
-        width: 350px;
-        padding: 30px;
-        background: #111;
-        border: 2px solid #00ffff;
-        border-radius: 12px;
-        text-align: center;
-        box-shadow: 0 0 20px #00ffff;
-    }
+        header {
+            color: #00ffff;
+            font-size: 48px;
+            font-weight: bold;
+            text-shadow: 2px 2px 5px #ff00ff;
+            margin-bottom: 30px;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            letter-spacing: 3px;
+            text-align: center;
+        }
 
-    h2 {
-        color: #00ffff;
-        margin-bottom: 20px;
-    }
+        .login-box {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(255,255,255,0.2);
+            width: 300px;
+            text-align: center;
+            position: relative;
+        }
 
-    input {
-        width: 100%;
-        padding: 12px;
-        margin-bottom: 15px;
-        border-radius: 6px;
-        border: none;
-        outline: none;
-        font-size: 14px;
-        background: #222;
-        color: white;
-        box-sizing: border-box;
-    }
+        .input-container {
+            position: relative;
+            margin-bottom: 10px;
+        }
 
-    input::placeholder {
-        color: #888;
-    }
+        input {
+            width: 100%;
+            padding: 10px;
+            padding-right: 40px;
+            margin: 10px 0;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+        }
 
-    button {
-        width: 100%;
-        padding: 12px;
-        background: #00ffff;
-        border: none;
-        border-radius: 6px;
-        font-size: 16px;
-        font-weight: bold;
-        cursor: pointer;
-        transition: all 0.3s ease;
-        margin-bottom: 10px;
-    }
+        .toggle-eye {
+            position: absolute;
+            top: 50%;
+            right: 12px;
+            transform: translateY(-50%);
+            cursor: pointer;
+            fill: #555;
+            width: 20px;
+            height: 20px;
+        }
 
-    button:hover {
-        background: #00ff88;
-        box-shadow: 0 0 10px #00ff88;
-    }
+        button, button.login-btn, button.secondary, button.link-btn {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 5px;
+        }
 
-    .message {
-        margin-top: 10px;
-        font-size: 14px;
-    }
+        button.login-btn {
+            border: none;
+            background: #007bff;
+            color: white;
+            cursor: pointer;
+        }
 
-    .error { color: red; }
-    .success { color: #00ff88; }
+        button.login-btn:hover {
+            background: #0056b3;
+        }
 
-    .back-container {
-        position: absolute;
-        top: 20px;
-        left: 20px;
-        z-index: 100;
-    }
+        button.secondary {
+            background: #28a745;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
 
-    .back-icon {
-        width: 50px;
-        height: 50px;
-        background: linear-gradient(135deg, #00ffff, #ff00ff);
-        border-radius: 50%;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        cursor: pointer;
-        box-shadow: 0 0 15px #00ffff, 0 0 25px #ff00ff;
-        transition: transform 0.2s, box-shadow 0.2s;
-        margin-bottom: 20px;
-    }
+        button.secondary:hover {
+            background: #1f7a32;
+        }
 
-    .back-icon:hover {
-        transform: scale(1.1);
-        box-shadow: 0 0 20px #00ffff, 0 0 35px #ff00ff;
-    }
+        button.link-btn {
+            background: none;
+            border: none;
+            color: #007bff;
+            text-decoration: underline;
+            cursor: pointer;
+            padding: 5px 0;
+        }
 
-    .back-icon svg {
-        width: 24px;
-        height: 24px;
-        fill: black;
-    }
-</style>
+        button.link-btn:hover {
+            color: #0056b3;
+        }
+    </style>
 </head>
 <body>
 
-<div class="back-container">
-  <div class="back-icon" onclick="window.location.href='interemail.html'" title="Go Back">
-    <svg viewBox="0 0 24 24">
-      <path d="M15.41 7.41 14 6l-6 6 6 6 1.41-1.41L10.83 12z"/>
-    </svg>
-  </div>
-</div>
+<header>Net Chat</header> <!-- Hano twahinduye -->
 
-<div class="container">
+<div class="login-box">
     <h2>Login</h2>
-    <input type="text" id="username" placeholder="Username" required>
-    <input type="password" id="password" placeholder="Password" required>
-    <button onclick="login()">Login</button>
-    <div class="message" id="message"></div>
+
+    <form id="loginForm">
+        <label>Email:</label>
+        <input type="text" id="userInput" required>
+
+        <div class="input-container">
+            <label>PIN:</label>
+            <input type="password" id="password" required>
+            <svg class="toggle-eye" onclick="togglePassword('password', this)" viewBox="0 0 24 24">
+                <path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zm0 12c-2.49 0-4.5-2.01-4.5-4.5S9.51 7.5 12 7.5 16.5 9.51 16.5 12 14.49 16.5 12 16.5zm0-7c-1.38 0-2.5 1.12-2.5 2.5S10.62 14.5 12 14.5 14.5 13.38 14.5 12 13.38 9.5 12 9.5z"/>
+            </svg>
+        </div>
+
+        <button type="submit" class="login-btn">Login</button>
+    </form>
+
+    <!-- Links -->
+    <button class="link-btn" onclick="window.location.href='Untitled-16.html'">Forgot Password?</button>
+    <button class="link-btn" onclick="window.location.href='interemail.html'">Other Issue</button>
+    <button class="secondary" onclick="window.location.href='Untitled-3.html'">Create account</button>
 </div>
 
 <script>
-function login() {
-    const username = document.getElementById("username").value.trim();
-    const password = document.getElementById("password").value.trim();
-    const message = document.getElementById("message");
+const loginForm = document.getElementById('loginForm');
 
-    if(!username || !password) {
-        message.textContent = "Please enter both username and password.";
-        message.className = "message error";
-        return;
-    }
+loginForm.addEventListener('submit', function(e){
+    e.preventDefault();
 
-    // Example check: you can replace this with real account validation
-    if(username === "user" && password === "123456") {
-        message.textContent = "✅ Login successful!";
-        message.className = "message success";
+    const userInput = document.getElementById('userInput').value;
+    const password = document.getElementById('password').value;
 
-        // Stay on interemail.html
-        setTimeout(() => {
-            window.location.href = "interemail.html";
-        }, 500);
+    // Reba localStorage ya registered users
+    let users = JSON.parse(localStorage.getItem('registeredUsers')) || [];
+    let found = users.find(u => u.email === userInput && u.pin === password);
+
+    if(found){
+        window.location.href = 'Untitled-5.html';
     } else {
-        message.textContent = "❌ Invalid username or password!";
-        message.className = "message error";
+        alert("No account found. Please create an account.");
+    }
+});
+
+function togglePassword(id, icon) {
+    const input = document.getElementById(id);
+    if(input.type === 'password') {
+        input.type = 'text';
+        icon.style.fill = '#007bff';
+    } else {
+        input.type = 'password';
+        icon.style.fill = '#555';
     }
 }
 </script>
