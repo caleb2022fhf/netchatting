@@ -78,6 +78,16 @@
             cursor: pointer;
             display: block;
         }
+
+        .error {
+            color: #b00020;
+            margin-bottom: 10px;
+        }
+
+        .info {
+            color: #007bff;
+            margin-bottom: 10px;
+        }
     </style>
 </head>
 <body>
@@ -92,6 +102,8 @@
 </div>
 
 <div class="form-box">
+    <div id="message" class="info" style="display:none;"></div>
+
     <form id="registrationForm">
         <label>Email:</label>
         <input type="email" id="email" required>
@@ -120,16 +132,31 @@
 </div>
 
 <script>
-    // NOTE: localStorage persists until explicitly cleared.
-    // Removed any code that deletes stored users so registrations remain long-term.
-
-    const form = document.getElementById('registrationForm');
-
     // MASTER LIST OF ALL TRAITS
     const allTraits = ["Arid","Fitte","travaile","couragesse","sociable","obeisante","fache"];
 
-    form.addEventListener('submit', function(e) {
+    const form = document.getElementById('registrationForm');
+    const messageEl = document.getElementById('message');
+
+    // Change this to your real production API base URL when deploying
+    const API_BASE = (location.hostname === 'localhost' || location.hostname === '127.0.0.1')
+        ? 'http://localhost:3000' // dev server
+        : 'https://your-production-domain.com'; // production server
+
+    function showMessage(text, isError = false) {
+        messageEl.style.display = 'block';
+        messageEl.className = isError ? 'error' : 'info';
+        messageEl.textContent = text;
+    }
+
+    function hideMessage() {
+        messageEl.style.display = 'none';
+        messageEl.textContent = '';
+    }
+
+    form.addEventListener('submit', async function(e) {
         e.preventDefault();
+        hideMessage();
 
         const email = document.getElementById('email').value.trim().toLowerCase();
         const username = document.getElementById('username').value.trim();
@@ -138,13 +165,12 @@
         const password = document.getElementById('password').value;
         const confirmPassword = document.getElementById('confirmPassword').value;
 
-        // USERNAME VALIDATION
+        // CLIENT-SIDE VALIDATION (same as before)
         if (!/^[A-Za-z_]+$/.test(username)) {
-            alert("Username can only contain letters and underscores.");
+            showMessage("Username can only contain letters and underscores.", true);
             return;
         }
 
-        // AGE VALIDATION
         const birthDate = new Date(dob);
         const today = new Date();
         let age = today.getFullYear() - birthDate.getFullYear();
@@ -155,51 +181,101 @@
             age--;
         }
         if (age < 18) {
-            alert("You must be at least 18 years old.");
+            showMessage("You must be at least 18 years old.", true);
             return;
         }
 
-        // PASSWORD VALIDATION
         if (password.length < 4 || password.length > 10) {
-            alert("Password must be 4 to 10 characters long.");
+            showMessage("Password must be 4 to 10 characters long.", true);
             return;
         }
         if (password !== confirmPassword) {
-            alert("Passwords do not match!");
+            showMessage("Passwords do not match!", true);
             return;
         }
 
-        // CHECK IF EMAIL ALREADY REGISTERED
-        const existingUsers = JSON.parse(localStorage.getItem('users')) || [];
-        const emailExists = existingUsers.some(user => user.email === email);
-        if (emailExists) {
-            alert("This email is already registered!");
-            return;
-        }
-
-        // ASSIGN ALL TRAITS TO EVERY EMAIL
-        const traits = allTraits.slice(); // copy
-
-        // SAVE NEW USER with timestamp so it's clear when they registered
-        const newUser = {
+        // Build payload to send to server
+        const payload = {
             email,
             username,
             secondName,
             dob,
             password,
-            traits,
-            registeredAt: new Date().toISOString()
+            traits: allTraits.slice()
         };
 
-        existingUsers.push(newUser);
-        localStorage.setItem('users', JSON.stringify(existingUsers));
+        try {
+            // Send registration to server API
+            const res = await fetch(`${API_BASE}/api/register`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                // Do not include credentials here unless your server uses cookies for sessions.
+                // If your server sets HttpOnly cookies on successful registration, include credentials: 'include'
+                // credentials: 'include',
+                body: JSON.stringify(payload)
+            });
 
-        // Optional: keep a separate index for quick lookup (not required)
-        // localStorage.setItem('users_index', JSON.stringify(existingUsers.map(u => u.email)));
+            // Expect server to return JSON with either success or error details
+            const data = await res.json().catch(() => ({}));
 
-        alert(`Registration successful!\nTraits: ${traits.join(", ")}`);
-        // Redirect to a post-registration page (change filename if needed)
-        window.location.href = 'Untitled-14.html';
+            if (res.ok) {
+                // Server persisted the user to a central DB and (optionally) set a session cookie
+                alert('Registration successful! You can now log in from any device.');
+                // Redirect to post-registration page
+                window.location.href = 'Untitled-14.html';
+                return;
+            }
+
+            // Handle common server responses
+            if (res.status === 409) {
+                // Conflict - email already exists
+                showMessage(data.message || 'This email is already registered!', true);
+                return;
+            }
+
+            if (res.status === 400) {
+                // Validation error from server
+                showMessage(data.message || 'Invalid registration data. Please check your input.', true);
+                return;
+            }
+
+            // Generic server error
+            showMessage(data.message || `Server error (${res.status}). Try again later.`, true);
+
+        } catch (err) {
+            // Network or CORS error: fallback for local testing only
+            console.error('Network error while registering:', err);
+
+            // Optional local fallback: store in localStorage only if server unreachable.
+            // This is for development convenience only. Remove in production.
+            const fallback = confirm('Server unreachable. Save registration locally for testing? (This will not sync across devices)');
+            if (fallback) {
+                const existingUsers = JSON.parse(localStorage.getItem('users')) || [];
+                const emailExists = existingUsers.some(user => user.email === email);
+                if (emailExists) {
+                    showMessage('This email is already registered locally.', true);
+                    return;
+                }
+                const newUser = {
+                    email,
+                    username,
+                    secondName,
+                    dob,
+                    password,
+                    traits: allTraits.slice(),
+                    registeredAt: new Date().toISOString(),
+                    _localFallback: true
+                };
+                existingUsers.push(newUser);
+                localStorage.setItem('users', JSON.stringify(existingUsers));
+                alert('Saved locally for testing. This will not be visible on other devices.');
+                window.location.href = 'Untitled-14.html';
+            } else {
+                showMessage('Could not reach server. Please try again later.', true);
+            }
+        }
     });
 </script>
 
