@@ -3,144 +3,439 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Home • Netless</title>
+<title>Net Chat Home</title>
 <style>
-    body {
-        margin: 0;
-        background-color: black;
-        font-family: Arial, sans-serif;
-        color: #00ffff;
-    }
+* { box-sizing: border-box; margin: 0; padding: 0; }
 
-    /* Header styling */
-    header {
-        display: flex;
-        justify-content: space-around;
-        align-items: center;
-        background-color: #111;
-        padding: 15px 0;
-        border-bottom: 1px solid #333;
-        position: sticky;
-        top: 0;
-        z-index: 100;
-    }
+body {
+  font-family: Arial, sans-serif;
+  background: black;
+  color: white;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
 
-    header div {
-        cursor: pointer;
-        padding: 8px 12px;
-        border-radius: 8px;
-        transition: all 0.3s ease;
-    }
+/* HEADER */
+header {
+  background: #111;
+  border-bottom: 1px solid #333;
+  padding: 15px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
 
-    header div:hover {
-        background: #00ffff;
-        color: black;
-    }
+header h1 {
+  color: #00ffff;
+  font-size: 36px;
+  text-shadow: 2px 2px 5px #ff00ff;
+  letter-spacing: 2px;
+}
 
-    header div.active {
-        background: #00ff88;
-        color: black;
-    }
+/* SEARCH */
+.search-container {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.search-container input {
+  padding: 6px 10px;
+  border-radius: 5px;
+  border: none;
+  width: 180px;
+  font-size: 14px;
+  outline: none;
+}
+.search-container input::placeholder {
+  color: #888;
+}
 
-    /* Video feed */
-    .video-feed {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        padding: 20px;
-    }
+/* HEADER BUTTONS */
+.nav-icons {
+  display: flex;
+  gap: 10px;
+}
 
-    .video-card {
-        width: 90%;
-        max-width: 600px;
-        background: #111;
-        border: 2px solid #00ffff;
-        border-radius: 12px;
-        margin-bottom: 20px;
-        box-shadow: 0 0 15px #00ffff;
-        overflow: hidden;
-        transition: transform 0.2s, box-shadow 0.2s;
-    }
+.nav-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 5px;
+  border-radius: 8px;
+  transition: background 0.3s, transform 0.2s;
+}
 
-    .video-card:hover {
-        transform: scale(1.02);
-        box-shadow: 0 0 20px #00ffff;
-    }
+.nav-btn img {
+  width: 24px;
+  height: 24px;
+  filter: invert(100%);
+}
 
-    .video-card video {
-        width: 100%;
-        display: block;
-    }
+.nav-btn:hover {
+  background: rgba(0, 255, 255, 0.2);
+  transform: scale(1.1);
+}
 
-    .video-info {
-        padding: 10px;
-    }
+/* MAIN LAYOUT */
+.container {
+  display: flex;
+  justify-content: center;
+  padding: 20px;
+  gap: 20px;
+  flex: 1;
+}
 
-    .video-info h3 {
-        margin: 0 0 5px 0;
-        font-size: 16px;
-        color: #00ffff;
-    }
+/* LEFT SIDEBAR */
+.left-sidebar {
+  width: 180px;
+  background: #111;
+  border: 1px solid #333;
+  border-radius: 6px;
+  padding: 15px;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
 
-    .video-info p {
-        margin: 0;
-        font-size: 14px;
-        color: #aaa;
-    }
+.left-sidebar div {
+  cursor: pointer;
+  padding: 8px;
+  border-radius: 5px;
+  transition: background 0.3s;
+}
+
+.left-sidebar div:hover {
+  background: rgba(0, 255, 255, 0.2);
+}
+
+/* USER PROFILE */
+#userProfile {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+#userProfile img {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+/* MAIN FEED */
+.feed {
+  max-width: 600px;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* STORIES */
+.stories {
+  display: flex;
+  gap: 10px;
+  padding: 10px;
+  background: #111;
+  border: 1px solid #333;
+  border-radius: 4px;
+}
+
+.story {
+  text-align: center;
+}
+
+.story img {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  border: 2px solid #c13584;
+}
+
+.story p {
+  font-size: 12px;
+  margin-top: 5px;
+}
+
+/* POSTS */
+.post {
+  background: #111;
+  border: 1px solid #333;
+  border-radius: 4px;
+}
+
+.post-header, .post-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px;
+}
+
+.avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: gray;
+}
+
+.username {
+  font-weight: bold;
+}
+
+.post-image {
+  height: 350px;
+  background: #222;
+  position: relative;
+}
+
+/* Video section inside posts */
+.video-section {
+  position: absolute;
+  bottom: 10px;
+  left: 10px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.video-section img {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: 2px solid #00ffff;
+}
+
+.video-section .name {
+  font-size: 14px;
+  font-weight: bold;
+  color: #00ffff;
+}
+
+.video-section .online {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: lime;
+}
+
+/* RIGHT SIDEBAR */
+.right-sidebar {
+  width: 180px;
+  background: #111;
+  border: 1px solid #333;
+  border-radius: 6px;
+  padding: 15px;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.right-sidebar div {
+  padding: 5px;
+}
+
+/* FOOTER */
+footer {
+  display: flex;
+  justify-content: space-around;
+  background: #111;
+  border-top: 1px solid #333;
+  padding: 10px 0;
+  position: sticky;
+  bottom: 0;
+}
+
+.footer-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+.footer-btn img {
+  width: 24px;
+  height: 24px;
+  filter: invert(100%);
+}
+
+/* HAMBURGER MENU */
+#hamburgerMenu {
+  display: none;
+  position: absolute;
+  top: 60px;
+  right: 20px;
+  background: white;
+  color: black;
+  padding: 15px;
+  border-radius: 10px;
+  box-shadow: 0 0 10px rgba(255,255,255,0.2);
+  z-index: 200;
+}
+
+#hamburgerMenu a {
+  display: block;
+  text-decoration: none;
+  color: black;
+  padding: 5px 0;
+  font-weight: bold;
+}
+
+#hamburgerMenu a:hover {
+  color: #007bff;
+}
+
+/* Search Result Container */
+#searchResultContainer {
+  margin-top: 10px;
+}
+#searchResultContainer div {
+  padding: 10px;
+  background: #111;
+  border: 1px solid #333;
+  border-radius: 6px;
+}
 </style>
 </head>
 <body>
 
 <header>
-    <div onclick="switchTab('home')">Home</div>
-    <div onclick="switchTab('notification')">Notification</div>
-    <div onclick="switchTab('video')">Video</div>
-    <div onclick="switchTab('table')">Table</div>
-    <div onclick="switchTab('chat')">Chat</div>
+  <h1>Net Chat</h1>
+  <div class="nav-icons">
+    <div class="search-container">
+      <input type="text" id="searchInput" placeholder="Search...">
+      <button class="nav-btn"><img src="https://img.icons8.com/material-outlined/24/000000/search--v1.png"></button>
+    </div>
+  </div>
+
+  <div id="hamburgerMenu">
+    <a href="#" onclick="goToYourActivity()">Your Activity</a>
+    <a href="#" onclick="goToReportProblem()">Report a Problem</a>
+    <a href="#" onclick="switchAccount()">Switch Account</a>
+    <a href="#" onclick="logOut()">Log Out</a>
+  </div>
 </header>
 
-<div class="video-feed" id="videoFeed">
-    <!-- 20 video cards -->
-    <script>
-        const videoFeed = document.getElementById('videoFeed');
-        const sampleVideos = [
-            {src: "https://www.w3schools.com/html/mov_bbb.mp4", title: "Sample Video"},
-            {src: "https://www.w3schools.com/html/movie.mp4", title: "Sample Video"}
-        ];
+<div class="container">
+  <div class="left-sidebar">
+    <div id="userProfile">
+      <img id="userAvatar" src="" alt="Profile Picture">
+      <div id="userName"></div>
+    </div>
 
-        for(let i=1; i<=20; i++){
-            const videoData = sampleVideos[i % 2]; // alternate videos
-            const card = document.createElement('div');
-            card.className = 'video-card';
-            card.innerHTML = `
-                <video src="${videoData.src}" controls></video>
-                <div class="video-info">
-                    <h3>${videoData.title} ${i}</h3>
-                    <p>Uploaded by: User${i}</p>
-                </div>
-            `;
-            videoFeed.appendChild(card);
-        }
-    </script>
+    <!-- FRIENDS SECTION WITH USER PHOTO FROM Untitled-4 -->
+    <div id="friendsSection" style="display:flex; align-items:center; gap:10px;">
+      <img id="friendAvatar" src="https://via.placeholder.com/40" alt="Friend Pic" style="width:40px; height:40px; border-radius:50%; object-fit:cover;">
+      <span>Friends</span>
+    </div>
+
+    <div>Shortcuts</div>
+  </div>
+
+  <div class="feed">
+    <div class="stories">
+      <div class="story"><img src=""><p>User1</p></div>
+      <div class="story"><img src=""><p>User2</p></div>
+      <div class="story"><p>User3</p></div>
+      <div class="story"><p>User4</p></div>
+    </div>
+
+    <div class="post">
+      <div class="post-header">
+        <div class="avatar"></div>
+        <div class="username">Aime Caleb</div>
+      </div>
+      <div class="post-image">
+        <div class="video-section">
+          <img src="">
+          <div class="name">User1</div>
+          <div class="online"></div>
+        </div>
+      </div>
+      <div class="post-actions">
+        <img src="https://img.icons8.com/material-outlined/24/000000/like--v1.png">
+        <img src="https://img.icons8.com/material-outlined/24/000000/comments.png">
+        <img src="https://img.icons8.com/material-outlined/24/000000/forward-arrow.png">
+      </div>
+    </div>
+
+    <div id="searchResultContainer"></div>
+  </div>
+
+  <div class="right-sidebar">
+    <div>Suggestions</div>
+    <div>Contacts</div>
+  </div>
 </div>
 
+<footer>
+  <button class="footer-btn" onclick="stayHome()"><img src="https://img.icons8.com/material-outlined/24/000000/home--v2.png"></button>
+  <button class="footer-btn" onclick="goToNotifications()"><img src="https://img.icons8.com/material-outlined/24/000000/appointment-reminders--v1.png"></button>
+  <button class="footer-btn" onclick="goToMessages()"><img src="https://img.icons8.com/material-outlined/24/000000/sms.png"></button>
+  <button class="footer-btn" onclick="goToFriends()"><img src="https://img.icons8.com/material-outlined/24/000000/group.png"></button>
+
+  <!-- GAME ICON ADDED HERE -->
+  <button class="footer-btn" onclick="goToGame()"><img src="https://img.icons8.com/material-outlined/24/000000/controller.png"></button>
+
+  <button class="footer-btn" onclick="goToSettings()"><img src="https://img.icons8.com/material-outlined/24/000000/settings.png"></button>
+  <button class="footer-btn" onclick="goToMenu()"><img src="https://img.icons8.com/material-outlined/24/000000/menu.png"></button>
+</footer>
+
+
 <script>
-function switchTab(tab) {
-    const tabs = document.querySelectorAll('header div');
-    tabs.forEach(t => t.classList.remove('active'));
+function stayHome(){ }
+function goToMessages(){ window.location.href="Untitled-6.html"; }
+function goToSettings(){ window.location.href="Untitled-7.html"; }
+function goToFriends(){ window.location.href="Untitled-8.html"; }
+function goToNotifications(){ window.location.href="Untitled-9.html"; }
+function goToGame(){ window.location.href="games.html"; }
 
-    // Add active to clicked tab
-    event.target.classList.add('active');
-
-    const feed = document.getElementById('videoFeed');
-
-    if(tab === 'home') {
-        feed.style.display = 'flex';
-    } else {
-        // Hide feed for other tabs
-        feed.style.display = 'none';
-    }
+function goToMenu(){
+  const menu = document.getElementById('hamburgerMenu');
+  menu.style.display = (menu.style.display === "block") ? "none" : "block";
 }
+
+function goToYourActivity(){ window.location.href="Untitled-17.html"; }
+function goToReportProblem(){ window.location.href="Untitled-22.html"; }
+function switchAccount(){ window.location.href='Untitled-15.html'; }
+function logOut(){ window.location.href='Untitled-13.html'; }
+
+// SHOW USER INFO
+window.addEventListener('DOMContentLoaded', function(){
+  const username = localStorage.getItem('username') || '';
+  document.getElementById('userName').textContent = username;
+
+  // Get the latest post image from Untitled-4
+  const latestPostImage = localStorage.getItem('latestPostImage') || 'https://via.placeholder.com/50';
+  document.getElementById('userAvatar').src = latestPostImage;
+  document.getElementById('friendAvatar').src = latestPostImage;
+});
+
+// LIVE SEARCH WITH PROFILE PICTURE
+function liveSearch() {
+  const query = document.getElementById('searchInput').value.trim();
+  const profilePic = document.getElementById('userAvatar').src || 'https://via.placeholder.com/50';
+  const container = document.getElementById('searchResultContainer');
+  if (!container) return;
+
+  if(query !== ""){
+    container.innerHTML = `
+      <div style="display:flex; align-items:center; gap:10px;">
+        <img src="${profilePic}" alt="Profile Pic" style="width:50px; height:50px; border-radius:50%; object-fit:cover;">
+        <div>
+          <strong>${query}</strong>
+          <p>User found below the search box.</p>
+        </div>
+      </div>
+    `;
+  } else {
+    container.innerHTML = "";
+  }
+}
+
+document.getElementById('searchInput').addEventListener('input', liveSearch);
 </script>
 
 </body>
